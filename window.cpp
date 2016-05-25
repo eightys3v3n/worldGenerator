@@ -6,13 +6,18 @@
 void drawWorld( sf::RenderWindow& window, World& world )
 {
   for ( unsigned int x = 0; x < world.size().x; x++ )
+  {
     for ( unsigned int y = 0; y < world.size().y; y++ )
-      window.draw( world.getShape(x,y) );
+    {
+      if ( world.getType(x,y) != 0 )
+        window.draw( world.getShape(x,y) );
+    }
+  }
 }
 
-void draw( sf::RenderWindow* window, World& world, sf::RectangleShape& player )
+void draw( sf::RenderWindow& window, World& world, sf::RectangleShape& player )
 {
-  window.clear( sf::Color::Black );
+  window.clear( sf::Color(100,100,100) );
 
   drawWorld( window, world );
   window.draw( player );
