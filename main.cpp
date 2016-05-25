@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "world.hpp"
@@ -15,7 +16,11 @@ int main( int argc, char** argv )
   else
     srand( 1337 );
 
-  RenderWindow window( VideoMode(500,500), "game", Style::Close );
+  bool running = true;
+
+  thread generator;
+
+  RenderWindow window( VideoMode(510,510), "game", Style::Close );
   window.setFramerateLimit(61);
 
   World world;
@@ -23,10 +28,10 @@ int main( int argc, char** argv )
 
   RectangleShape player;
   player.setSize( Vector2f( CHUNK_SIZE, CHUNK_SIZE ) );
-  player.setPosition( world.size().x / 2 * 10, world.size().y / 2 * 10 );
+  player.setPosition( world.size().x / 2 * CHUNK_SIZE, world.size().y / 2 * CHUNK_SIZE );
   player.setFillColor( Color::Black );
 
-  generate( world );
+  generator = thread( generate, world );
 
   while ( window.isOpen() )
   {

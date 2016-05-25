@@ -6,7 +6,7 @@
 #include <SFML/System.hpp>
 #include "chunk.hpp"
 
-#define VIEW_DISTANCE 5
+#define VIEW_DISTANCE 4
 
 typedef sf::Vector2<unsigned int> vector2ui;
 
