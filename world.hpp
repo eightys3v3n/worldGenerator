@@ -26,7 +26,7 @@ struct World
   sf::RectangleShape& getShape( vector2ui pos );
 };
 
-std::vector< Chunk > surroundingChunks( World& world, unsigned int x, unsigned int y );
-std::vector< Chunk > surroundingChunks( World& world, vector2ui pos );
+std::vector< Chunk > surroundingChunks( World* world, unsigned int x, unsigned int y );
+std::vector< Chunk > surroundingChunks( World* world, vector2ui pos );
 
 #endif // WORLD_

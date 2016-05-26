@@ -1,5 +1,5 @@
 gcc=g++
-args=--std=c++17 -Wall -Wextra -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -g
+args=--std=c++17 -Wall -Wextra -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lpthread -g
 part=$(gcc) $(args) -c
 full=$(gcc) $(args)
 library=tmp/world.main.o tmp/generator.main.o tmp/window.main.o

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <future>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "world.hpp"
@@ -18,8 +19,6 @@ int main( int argc, char** argv )
 
   bool running = true;
 
-  thread generator;
-
   RenderWindow window( VideoMode(510,510), "game", Style::Close );
   window.setFramerateLimit(61);
 
@@ -31,13 +30,15 @@ int main( int argc, char** argv )
   player.setPosition( world.size().x / 2 * CHUNK_SIZE, world.size().y / 2 * CHUNK_SIZE );
   player.setFillColor( Color::Black );
 
-  generator = thread( generate, world );
+  thread generator( ::generate, &world ); // generate function name MUST have '::' in front because of the 'using namespace' statements.
 
   while ( window.isOpen() )
   {
     input( window );
     draw( window, world, player );
   }
+
+  generator.join();
 
   window.close();
   return false;

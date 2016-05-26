@@ -68,12 +68,12 @@ sf::RectangleShape& World::getShape( vector2ui pos )
   return getShape( pos.x, pos.y );
 }
 
-std::vector< Chunk > surroundingChunks( World& world, unsigned int x, unsigned int y )
+std::vector< Chunk > surroundingChunks( World* world, unsigned int x, unsigned int y )
 {
   std::vector< Chunk > r;
   Chunk blank;
 
-  if ( x > world.size().x - 1 || y > world.size().y - 1 )
+  if ( x > world->size().x - 1 || y > world->size().y - 1 )
     throw new std::string("surroundingChunks:coords are not in world " + std::to_string(x) + "," + std::to_string(y) + "." );
 
   if ( x == 0 && y == 0 )
@@ -82,94 +82,94 @@ std::vector< Chunk > surroundingChunks( World& world, unsigned int x, unsigned i
     r.push_back( blank );
     r.push_back( blank );
     r.push_back( blank );
-    r.push_back( world.map[x+1][y  ] );
+    r.push_back( world->map[x+1][y  ] );
     r.push_back( blank );
-    r.push_back( world.map[x  ][y+1] );
-    r.push_back( world.map[x+1][y+1] );
+    r.push_back( world->map[x  ][y+1] );
+    r.push_back( world->map[x+1][y+1] );
   }
-  else if ( x > 0 && x < world.size().x - 1 && y == 0 )
+  else if ( x > 0 && x < world->size().x - 1 && y == 0 )
   {
     r.push_back( blank );
     r.push_back( blank );
     r.push_back( blank );
-    r.push_back( world.map[x-1][y  ] );
-    r.push_back( world.map[x+1][y  ] );
-    r.push_back( world.map[x-1][y+1] );
-    r.push_back( world.map[x  ][y+1] );
-    r.push_back( world.map[x+1][y+1] );
+    r.push_back( world->map[x-1][y  ] );
+    r.push_back( world->map[x+1][y  ] );
+    r.push_back( world->map[x-1][y+1] );
+    r.push_back( world->map[x  ][y+1] );
+    r.push_back( world->map[x+1][y+1] );
   }
-  else if ( x == world.size().x - 1 && y == 0 )
+  else if ( x == world->size().x - 1 && y == 0 )
   {
     r.push_back( blank );
     r.push_back( blank );
     r.push_back( blank );
-    r.push_back( world.map[x-1][y  ] );
+    r.push_back( world->map[x-1][y  ] );
     r.push_back( blank );
-    r.push_back( world.map[x-1][y+1] );
-    r.push_back( world.map[x  ][y+1] );
-    r.push_back( blank );
-  }
-  else if ( x == 0 && y > 0 && y < world.size().y - 1 )
-  {
-    r.push_back( blank );
-    r.push_back( world.map[x  ][y-1] );
-    r.push_back( world.map[x+1][y-1] );
-    r.push_back( blank );
-    r.push_back( world.map[x+1][y  ] );
-    r.push_back( blank );
-    r.push_back( world.map[x  ][y+1] );
-    r.push_back( world.map[x+1][y+1] );
-  }
-  else if ( x > 0 && y > 0 && x < world.size().x - 1 && y < world.size().y - 1 )
-  {
-    r.push_back( world.map[x-1][y-1] );
-    r.push_back( world.map[x  ][y-1] );
-    r.push_back( world.map[x+1][y-1] );
-    r.push_back( world.map[x-1][y  ] );
-    r.push_back( world.map[x+1][y  ] );
-    r.push_back( world.map[x-1][y+1] );
-    r.push_back( world.map[x  ][y+1] );
-    r.push_back( world.map[x+1][y+1] );
-  }
-  else if ( x == world.size().x - 1 && y > 0 && y < world.size().y - 1 )
-  {
-    r.push_back( world.map[x-1][y-1] );
-    r.push_back( world.map[x  ][y-1] );
-    r.push_back( blank );
-    r.push_back( world.map[x-1][y  ] );
-    r.push_back( blank );
-    r.push_back( world.map[x-1][y+1] );
-    r.push_back( world.map[x  ][y+1] );
+    r.push_back( world->map[x-1][y+1] );
+    r.push_back( world->map[x  ][y+1] );
     r.push_back( blank );
   }
-  else if ( x == 0 && y == world.size().y - 1 )
+  else if ( x == 0 && y > 0 && y < world->size().y - 1 )
   {
     r.push_back( blank );
-    r.push_back( world.map[x  ][y-1] );
-    r.push_back( world.map[x+1][y-1] );
+    r.push_back( world->map[x  ][y-1] );
+    r.push_back( world->map[x+1][y-1] );
     r.push_back( blank );
-    r.push_back( world.map[x+1][y  ] );
+    r.push_back( world->map[x+1][y  ] );
     r.push_back( blank );
+    r.push_back( world->map[x  ][y+1] );
+    r.push_back( world->map[x+1][y+1] );
+  }
+  else if ( x > 0 && y > 0 && x < world->size().x - 1 && y < world->size().y - 1 )
+  {
+    r.push_back( world->map[x-1][y-1] );
+    r.push_back( world->map[x  ][y-1] );
+    r.push_back( world->map[x+1][y-1] );
+    r.push_back( world->map[x-1][y  ] );
+    r.push_back( world->map[x+1][y  ] );
+    r.push_back( world->map[x-1][y+1] );
+    r.push_back( world->map[x  ][y+1] );
+    r.push_back( world->map[x+1][y+1] );
+  }
+  else if ( x == world->size().x - 1 && y > 0 && y < world->size().y - 1 )
+  {
+    r.push_back( world->map[x-1][y-1] );
+    r.push_back( world->map[x  ][y-1] );
     r.push_back( blank );
+    r.push_back( world->map[x-1][y  ] );
+    r.push_back( blank );
+    r.push_back( world->map[x-1][y+1] );
+    r.push_back( world->map[x  ][y+1] );
     r.push_back( blank );
   }
-  else if ( x > 0 && x < world.size().x - 1 && y == world.size().x - 1 )
+  else if ( x == 0 && y == world->size().y - 1 )
   {
-    r.push_back( world.map[x-1][y-1] );
-    r.push_back( world.map[x  ][y-1] );
-    r.push_back( world.map[x+1][y-1] );
-    r.push_back( world.map[x-1][y  ] );
-    r.push_back( world.map[x+1][y  ] );
+    r.push_back( blank );
+    r.push_back( world->map[x  ][y-1] );
+    r.push_back( world->map[x+1][y-1] );
+    r.push_back( blank );
+    r.push_back( world->map[x+1][y  ] );
     r.push_back( blank );
     r.push_back( blank );
     r.push_back( blank );
   }
-  else if ( x == world.size().x - 1 && y == world.size().x - 1 )
+  else if ( x > 0 && x < world->size().x - 1 && y == world->size().x - 1 )
   {
-    r.push_back( world.map[x-1][y-1] );
-    r.push_back( world.map[x  ][y-1] );
+    r.push_back( world->map[x-1][y-1] );
+    r.push_back( world->map[x  ][y-1] );
+    r.push_back( world->map[x+1][y-1] );
+    r.push_back( world->map[x-1][y  ] );
+    r.push_back( world->map[x+1][y  ] );
     r.push_back( blank );
-    r.push_back( world.map[x-1][y  ] );
+    r.push_back( blank );
+    r.push_back( blank );
+  }
+  else if ( x == world->size().x - 1 && y == world->size().x - 1 )
+  {
+    r.push_back( world->map[x-1][y-1] );
+    r.push_back( world->map[x  ][y-1] );
+    r.push_back( blank );
+    r.push_back( world->map[x-1][y  ] );
     r.push_back( blank );
     r.push_back( blank );
     r.push_back( blank );
@@ -181,7 +181,7 @@ std::vector< Chunk > surroundingChunks( World& world, unsigned int x, unsigned i
   return r;
 }
 
-std::vector< Chunk > surroundingChunks( World& world, vector2ui pos )
+std::vector< Chunk > surroundingChunks( World* world, vector2ui pos )
 {
   return surroundingChunks( world, (unsigned)pos.x, (unsigned)pos.y );
 }

@@ -35,7 +35,7 @@ void surroundingChunks( World& world )
     {
       try
       {
-        chunks = surroundingChunks( world, x,y);
+        chunks = surroundingChunks( &world, x,y);
       }
       catch ( std::string* error )
       {
