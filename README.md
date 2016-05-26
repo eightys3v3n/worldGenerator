@@ -1,2 +1,2 @@
 # worldGenerator
-experimentation with 2D world generation
+multi-threading example for chunk generation
