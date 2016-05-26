@@ -58,11 +58,11 @@ void generateChunk( World* world, vector2ui pos )
   world->set( pos.x, pos.y, type );
 }
 
-void generateChunkAsync( int l, int c, World* world, ChunkQueue* chunk )
+void generateChunkAsync( World* world, ChunkQueue* chunk )
 {
   for ( unsigned int r = 0; r < chunk->r.size(); r++ )
   {
-    std::cout << l << ":" << c << "|waiting for " << r << std::endl;
+    //std::cout << l << ":" << c << "|waiting for " << r << std::endl;
     chunk->r[r]->wait();
   }
 
@@ -82,7 +82,7 @@ void generate( World* world )
   unsigned int y = world->size().y / 2;
   generateChunk( world, {x,y} );
 
-  std::this_thread::sleep_for( std::chrono::milliseconds(2000) );
+  std::this_thread::sleep_for( std::chrono::milliseconds(2000) ); // wait for drawing to initialize
 
   /*for ( unsigned int r = 0; r < VIEW_DISTANCE; r++ )
   {
@@ -115,46 +115,25 @@ void generate( World* world )
     }
   }*/
 
-// generates the entire screen so i can debug the multi-threading
-  s.resize( world->size().x );
+  struct temp
+  {
+    vector2ui pos;
+    std::packaged_task< void( World*,)
+  }
 
+  std::vector< std::vector< std::packaged_task< void( World*, ChunkQueue* ) > > > chunks;
+
+  chunks.resize( world->size().x );
   for ( unsigned int x = 0; x < world->size().x; x++ )
   {
-    s[x].resize( world->size().y );
-
+    chunks[x].resize( world->size().y );
     for ( unsigned int y = 0; y < world->size().y; y++ )
     {
-      s[x][y].pos = vector2ui(x,y);
+      chunks[x][y] = std::packaged_task< void( World*, ChunkQueue* ) >( generateChunkAsync )
 
     }
   }
-// end debug code
 
-  int threadsRunning = 0;
 
-  // starts all the threads.
-  for ( unsigned int l = 0; l < s.size(); l++ )
-  {
-    for ( unsigned int c = 0; c < s[l].size(); c++ )
-    {
-      while ( threadsRunning > 4 )
-      {
-        std::this_thread::sleep_for( std::chrono::milliseconds(100) );
-        std::cout << "waiting for threads to close" << std::endl;
 
-        for ( unsigned int t = 0; t < threads.size(); t++ )
-        {
-          if ( ! threads[t].joinable() )
-          {
-            threadsRunning--;
-            threads.erase( threads.begin() + t );
-            t--;
-          }
-        }
-      }
-
-      threads.resize( threads.size() + 1 );
-      threads[ threads.size() - 1 ] = std::thread( generateChunkAsync, l, c, world, &s[l][c] );
-    }
-  }
 }
