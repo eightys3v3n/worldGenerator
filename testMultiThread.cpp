@@ -14,11 +14,11 @@ condition_variable cv;
 class Queue
 {
 public:
-  void push(int num)
+  void push(int new)
   {
     unique_lock<mutex> lk(m);
     //cout << "push:locked" << endl;
-    q.push(num);
+    q.push(new);
     //cout << "push:pushed" << endl;
     lk.unlock();
     //cout << "push:unlocked" << endl;
@@ -51,7 +51,11 @@ public:
 
 private:
   queue<int> q;
-} qq;
+};
+
+
+Queue<int> qq;
+
 
 void produceF()
 {
