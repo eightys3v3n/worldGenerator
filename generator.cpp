@@ -81,7 +81,7 @@ void generate( World* world )
 
   for ( unsigned int r = 1; r < VIEW_DISTANCE; r++ )
   {
-    for ( unsigned int l = 0; l < r; l++ )
+    for ( unsigned int l = 0; l <= r; l++ )
     {
       s.resize( s.size() + 1 );
 
