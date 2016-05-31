@@ -16,7 +16,7 @@ void drawWorld( sf::RenderWindow& window, World& world )
 
       else if ( world.getType(x,y) < 0 ) // debug ground type
       {
-        world.getShape(x,y).setFillColor( DEBUG_COLOUR );
+        world.getShape(x,y).setFillColor( sf::Color::DEBUG_COLOUR );
         window.draw( world.getShape(x,y) );
       }
     }
