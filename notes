@@ -1,0 +1,1 @@
+when looking for a specific function or bit of code (say the stuff that deals with world modification) you should look for the name first (world.{c,h}pp) and a generic name second (types.{c,h}pp)
