@@ -79,9 +79,9 @@ void generate( World* world )
 
   std::this_thread::sleep_for( std::chrono::milliseconds(1000) ); // wait for drawing to initialize
 
-  for ( unsigned int r = 1; r < VIEW_DISTANCE; r++ )
+  for ( unsigned int r = 0; r < VIEW_DISTANCE; r++ )
   {
-    for ( unsigned int l = 0; l <= r; l++ )
+    for ( unsigned int l = 0; l <= r; l++ ) // expand in the x direction
     {
       s.resize( s.size() + 1 );
 
@@ -98,6 +98,24 @@ void generate( World* world )
         s[ s.size() - 1 ].push( vector2ui{x-r, y+l} );
       }
     }
+
+    for ( unsigned int l = 0; l < r; l++ ) // expand in the y direction
+    {
+      s.resize( s.size() + 1 );
+
+      if ( l == 0 )
+      {
+        s[ s.size() - 1 ].push( vector2ui{x, y-r} );
+        s[ s.size() - 1 ].push( vector2ui{x, y+r} );
+      }
+      else
+      {
+        s[ s.size() - 1 ].push( vector2ui{x-l, y+r} );
+        s[ s.size() - 1 ].push( vector2ui{x-l, y-r} );
+        s[ s.size() - 1 ].push( vector2ui{x+l, y+r} );
+        s[ s.size() - 1 ].push( vector2ui{x+l, y-r} );
+      }
+    }
   }
 
   for ( unsigned int i = 0; i < s.size(); i++ )
@@ -110,7 +128,7 @@ void generate( World* world )
     }
 
     std::cout << "generated parallel " << i << std::endl;
-    std::this_thread::sleep_for( std::chrono::milliseconds(1000) );
+    std::this_thread::sleep_for( std::chrono::milliseconds(50) );
   }
 
   /*std::vector< std::vector< std::packaged_task< void( World*, ChunkQueue* ) > > > chunks;

@@ -34,7 +34,7 @@ int main( int argc, char** argv )
 
   while ( window.isOpen() )
   {
-    input( window );
+    input( window, world );
     draw( window, world, player );
   }
 

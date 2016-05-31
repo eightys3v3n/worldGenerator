@@ -23,6 +23,13 @@ struct World
   int getType( vector2ui pos );
   sf::RectangleShape& getShape( unsigned int x, unsigned int y );
   sf::RectangleShape& getShape( vector2ui pos );
+
+  // code for fun; will not be used once the world is larger than the screen
+  void shiftDown();
+  void shiftRight();
+  void shiftUp();
+  void shiftLeft();
+  // end code for fun
 };
 
 std::vector< Chunk > surroundingChunks( World* world, unsigned int x, unsigned int y );

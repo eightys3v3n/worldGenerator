@@ -70,6 +70,36 @@ sf::RectangleShape& World::getShape( vector2ui pos )
   return getShape( pos.x, pos.y );
 }
 
+// code for fun; will not be used once the world is larger than the screen
+void World::shiftDown()
+{
+  for ( unsigned int x = map.size() - 1; x != 0; x-- )
+    for ( unsigned int y = map[x].size() - 1; y != 0; y-- )
+      map[x][y+1].type = map[x][y].type;
+}
+
+void World::shiftRight()
+{
+  for ( unsigned int x = map.size() - 1; x != 0; x-- )
+    for ( unsigned int y = map[x].size() - 1; y != 0; y-- )
+      map[x+1][y].type = map[x][y].type;
+}
+
+void World::shiftUp()
+{
+  for ( unsigned int x = 0; x < map.size(); x++ )
+    for ( unsigned int y = 1; y < map[x].size(); y++ )
+        map[x][y-1].type = map[x][y].type;
+}
+
+void World::shiftLeft()
+{
+  for ( unsigned int x = 1; x < map.size(); x++ )
+    for ( unsigned int y = 0; y < map[x].size(); y++ )
+      map[x-1][y].type = map[x][y].type;
+}
+// end code for fun
+
 std::vector< Chunk > surroundingChunks( World* world, unsigned int x, unsigned int y )
 {
   std::vector< Chunk > r;

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -31,7 +32,7 @@ void draw( sf::RenderWindow& window, World& world, sf::RectangleShape& player )
   window.display();
 }
 
-void input( sf::RenderWindow& window )
+void input( sf::RenderWindow& window, World& world )
 {
   sf::Event event;
 
@@ -42,6 +43,29 @@ void input( sf::RenderWindow& window )
       case sf::Event::Closed:
         window.close();
         break;
+
+      case sf::Event::TextEntered:
+        switch ( event.text.unicode )
+        {
+          case 119: // w
+            world.shiftDown(); // move player up
+            break;
+
+          case 97: // a
+            world.shiftRight(); // move player left
+            break;
+
+          case 115: // s
+            world.shiftUp(); // move player down
+            break;
+
+          case 100: // d
+            world.shiftLeft(); // move player right
+            break;
+
+          default:
+            std::cout << event.text.unicode << std::endl;
+        }
     }
   }
 }
