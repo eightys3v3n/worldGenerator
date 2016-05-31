@@ -3,6 +3,7 @@
 #include <future>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include "defaults.hpp"
 #include "world.hpp"
 #include "generator.hpp"
 #include "window.hpp"

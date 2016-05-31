@@ -4,7 +4,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-#include "types.hpp"
+#include "data_types/chunk.hpp"
 
 #define VIEW_DISTANCE 4
 
