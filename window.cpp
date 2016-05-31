@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "world.hpp"
+#include "defaults.hpp"
 
 void drawWorld( sf::RenderWindow& window, World& world )
 {
@@ -15,7 +16,7 @@ void drawWorld( sf::RenderWindow& window, World& world )
 
       else if ( world.getType(x,y) < 0 ) // debug ground type
       {
-        world.getShape(x,y).setFillColor( sf::Color::Green );
+        world.getShape(x,y).setFillColor( DEBUG_COLOUR );
         window.draw( world.getShape(x,y) );
       }
     }
