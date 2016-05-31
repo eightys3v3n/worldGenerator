@@ -6,6 +6,7 @@
 #include "world.hpp"
 #include "generator.hpp"
 #include "window.hpp"
+#include "world.hpp"
 using namespace std;
 using namespace sf;
 
