@@ -16,4 +16,4 @@
 #endif // WATER
 
 // how many chunks away should be generated
-#define VIEW_DISTANCE 10
+#define VIEW_DISTANCE 5
