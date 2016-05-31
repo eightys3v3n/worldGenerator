@@ -79,25 +79,13 @@ void generate( World* world )
 
   std::this_thread::sleep_for( std::chrono::milliseconds(1000) ); // wait for drawing to initialize
 
-  for ( unsigned int r = 0; r < VIEW_DISTANCE; r++ )
+  for ( unsigned int r = 1; r < VIEW_DISTANCE; r++ )
   {
     for ( unsigned int l = 0; l < r; l++ )
     {
       s.resize( s.size() + 1 );
 
-      if ( l == 0 && r == 1 )
-      {
-        s[ s.size() - 1 ].push( vector2ui{x-r, y} );
-        s[ s.size() - 1 ].push( vector2ui{x+r, y} );
-
-        s.resize( s.size() + 1 );
-
-        s[ s.size() - 1 ].push( vector2ui{x+r, y+1} );
-        s[ s.size() - 1 ].push( vector2ui{x+r, y-1} );
-        s[ s.size() - 1 ].push( vector2ui{x-r, y+1} );
-        s[ s.size() - 1 ].push( vector2ui{x-r, y-1} );
-      }
-      else if ( l == 0 && r > 0 )
+      if ( l == 0 )
       {
         s[ s.size() - 1 ].push( vector2ui{x-r, y} );
         s[ s.size() - 1 ].push( vector2ui{x+r, y} );
