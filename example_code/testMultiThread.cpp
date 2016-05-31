@@ -4,28 +4,31 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include "../data_types/queue.cpp"
 using namespace std;
 using namespace chrono;
 
-mutex m;
 bool running = true;
+Queue<int> qq;
+/*mutex m;
 condition_variable cv;
 
+template<typename TYPE>
 class Queue
 {
 public:
-  void push(int new)
+  void push(TYPE n)
   {
     unique_lock<mutex> lk(m);
     //cout << "push:locked" << endl;
-    q.push(new);
+    q.push(n);
     //cout << "push:pushed" << endl;
     lk.unlock();
     //cout << "push:unlocked" << endl;
     cv.notify_one();
   }
 
-  int pop()
+  TYPE pop()
   {
     unique_lock<mutex> lk(m);
     //cout << "pop:locked" << endl;
@@ -34,7 +37,7 @@ public:
       cv.wait(lk);
     //cout << "pop:elements exist" << endl;
 
-    int buf = q.front();
+    TYPE buf = q.front();
     //cout << "pop:got element " << buf << endl;
     q.pop();
     //cout << "pop:removed element" << endl;
@@ -50,11 +53,8 @@ public:
   }
 
 private:
-  queue<int> q;
-};
-
-
-Queue<int> qq;
+  queue<TYPE> q;
+};*/
 
 
 void produceF()
@@ -76,7 +76,8 @@ void consumeF(int id)
   {
     while ( ! qq.empty() )
     {
-      cout << "pop" << id << ":" << qq.pop() << endl;
+      cout << "pop" << id << ":" << qq.front() << endl;
+      qq.pop();
       this_thread::sleep_for( milliseconds(400) );
     }
   }

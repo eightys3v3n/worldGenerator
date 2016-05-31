@@ -14,3 +14,6 @@
 #define WATER 2
 #define WATER_PROB sf::Vector2<double>{ .x = 70, .y = 99 }
 #endif // WATER
+
+// how many chunks away should be generated
+#define VIEW_DISTANCE 10

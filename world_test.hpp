@@ -2,7 +2,7 @@
 #define WORLD_TEST
 
 #include <vector>
-#include "chunk.hpp"
+#include "data_types/chunk.hpp"
 #include "world.hpp"
 
 namespace test

@@ -6,31 +6,44 @@
 #include <condition_variable>
 #include "queue.hpp"
 
-void Queue::push(int new)
+template<typename TYPE> void Queue<TYPE>::push(TYPE n)
 {
   std::unique_lock<std::mutex> lk(m);
 
-  q.push(new);
+  q.push(n);
 
   lk.unlock();
   cv.notify_one();
 }
 
-int Queue::pop()
+template<typename TYPE> TYPE& Queue<TYPE>::front()
+{
+  std::unique_lock<std::mutex> lk(m);
+
+  while( q.empty() )
+    cv.wait(lk);
+
+  return q.front();
+}
+
+template<typename TYPE> void Queue<TYPE>::pop()
 {
   std::unique_lock<std::mutex> lk(m);
 
   while ( q.empty() )
     cv.wait(lk);
 
-  int buf = q.front();
   q.pop();
 
   lk.unlock();
-  return buf;
 }
 
-bool Queue::empty()
+template<typename TYPE> unsigned int Queue<TYPE>::size()
+{
+  return q.size();
+}
+
+template<typename TYPE> bool Queue<TYPE>::empty()
 {
   return q.empty();
 }

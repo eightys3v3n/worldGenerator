@@ -9,8 +9,14 @@ void drawWorld( sf::RenderWindow& window, World& world )
   {
     for ( unsigned int y = 0; y < world.size().y; y++ )
     {
-      if ( world.getType(x,y) != 0 )
+      if ( world.getType(x,y) > 0 )
         window.draw( world.getShape(x,y) );
+
+      else if ( world.getType(x,y) < 0 ) // debug ground type
+      {
+        world.getShape(x,y).setFillColor( sf::Color::Green );
+        window.draw( world.getShape(x,y) );
+      }
     }
   }
 }

@@ -1,1 +1,3 @@
 when looking for a specific function or bit of code (say the stuff that deals with world modification) you should look for the name first (world.{c,h}pp) and a generic name second (types.{c,h}pp)
+
+vectors require elements to be movable, which mutexes are not. so to have an array of objects that contain mutexes one must use arrays that don't move stuff around (ie deque).

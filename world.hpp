@@ -5,8 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include "data_types/chunk.hpp"
-
-#define VIEW_DISTANCE 4
+#include "defaults.hpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
 

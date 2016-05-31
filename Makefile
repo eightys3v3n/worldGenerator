@@ -2,7 +2,7 @@ gcc=g++
 args=--std=c++17 -Wall -Wextra -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lpthread -g
 part=$(gcc) $(args) -c
 full=$(gcc) $(args)
-library=tmp/world.main.o tmp/generator.main.o tmp/window.main.o
+library=tmp/world.main.o tmp/generator.main.o tmp/window.main.o tmp/queue.type.o
 
 all: main test
 
@@ -12,7 +12,7 @@ main: tmp/main $(library)
 tmp/main: main.cpp
 	$(part) main.cpp -o tmp/main
 
-tmp/world.main.o: world.cpp world.hpp chunk.hpp
+tmp/world.main.o: world.cpp world.hpp data_types/chunk.hpp
 	$(part) world.cpp -o tmp/world.main.o
 
 tmp/generator.main.o: generator.cpp world.hpp
@@ -20,6 +20,9 @@ tmp/generator.main.o: generator.cpp world.hpp
 
 tmp/window.main.o: window.cpp
 	$(part) window.cpp -o tmp/window.main.o
+
+tmp/queue.type.o: data_types/queue.cpp data_types/queue.hpp
+	$(part) data_types/queue.cpp -o tmp/queue.type.o
 
 test: tmp/test $(library) tmp/world.test.o
 	$(full) tmp/test tmp/*.main.o tmp/*.test.o -o test

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "world.hpp"
-#include "chunk.hpp"
+#include "data_types/chunk.hpp"
 
 namespace test
 {

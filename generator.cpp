@@ -3,21 +3,15 @@
 #include <chrono>
 #include <thread>
 #include <chrono>
-#include <future>
+#include <queue>
 #include <SFML/System.hpp>
 #include "world.hpp"
 #include "window.hpp"
+#include "defaults.hpp"
+#include "data_types/queue.cpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<double> vector2d;
-
-struct ChunkQueue
-{
-  vector2ui pos;
-  std::promise< int > p;
-  std::future< int > f = p.get_future();
-  std::vector< std::future< int >* > r;
-};
 
 void generateChunk( World* world, vector2ui pos )
 {
@@ -58,7 +52,7 @@ void generateChunk( World* world, vector2ui pos )
   world->set( pos.x, pos.y, type );
 }
 
-void generateChunkAsync( World* world, ChunkQueue* chunk )
+/*void generateChunkAsync( World* world, ChunkQueue* chunk )
 {
   for ( unsigned int r = 0; r < chunk->r.size(); r++ )
   {
@@ -72,56 +66,66 @@ void generateChunkAsync( World* world, ChunkQueue* chunk )
 
   //std::cout << l << ":" << c << "|finished" << std::endl;
   chunk->p.set_value(true);
-}
+}*/
 
 void generate( World* world )
 {
-  std::vector< std::vector< ChunkQueue > > s;
+  std::deque< Queue< vector2ui > > s;
+  //std::vector< Queue< int > > s;
   std::vector< std::thread > threads;
   unsigned int x = world->size().x / 2;
   unsigned int y = world->size().y / 2;
-  generateChunk( world, {x,y} );
+  // generateChunk( world, {x,y} );
 
-  std::this_thread::sleep_for( std::chrono::milliseconds(2000) ); // wait for drawing to initialize
+  std::this_thread::sleep_for( std::chrono::milliseconds(1000) ); // wait for drawing to initialize
 
-  /*for ( unsigned int r = 0; r < VIEW_DISTANCE; r++ )
+  for ( unsigned int r = 0; r < VIEW_DISTANCE; r++ )
   {
     for ( unsigned int l = 0; l < r; l++ )
     {
       s.resize( s.size() + 1 );
 
-      if ( l == 0 )
+      if ( l == 0 && r == 1 )
       {
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x  ,y-1);
+        s[ s.size() - 1 ].push( vector2ui{x-r, y} );
+        s[ s.size() - 1 ].push( vector2ui{x+r, y} );
 
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x  ,y+1);
+        s.resize( s.size() + 1 );
+
+        s[ s.size() - 1 ].push( vector2ui{x+r, y+1} );
+        s[ s.size() - 1 ].push( vector2ui{x+r, y-1} );
+        s[ s.size() - 1 ].push( vector2ui{x-r, y+1} );
+        s[ s.size() - 1 ].push( vector2ui{x-r, y-1} );
+      }
+      else if ( l == 0 && r > 0 )
+      {
+        s[ s.size() - 1 ].push( vector2ui{x-r, y} );
+        s[ s.size() - 1 ].push( vector2ui{x+r, y} );
       }
       else
       {
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x+r,y-1);
-
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x-r,y-1);
-
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x+r,y+1);
-
-        s[ s.size() - 1].resize( s[ s.size() - 1].size() + 1 );
-        s[ s.size() - 1 ][ s[ s.size() - 1].size() - 1 ].pos = vector2ui(x-r,y+1);
+        s[ s.size() - 1 ].push( vector2ui{x+r, y-l} );
+        s[ s.size() - 1 ].push( vector2ui{x-r, y-l} );
+        s[ s.size() - 1 ].push( vector2ui{x+r, y+l} );
+        s[ s.size() - 1 ].push( vector2ui{x-r, y+l} );
       }
     }
-  }*/
-
-  struct temp
-  {
-    vector2ui pos;
-    std::packaged_task< void( World*,)
   }
 
-  std::vector< std::vector< std::packaged_task< void( World*, ChunkQueue* ) > > > chunks;
+  for ( unsigned int i = 0; i < s.size(); i++ )
+  {
+    while ( ! s[i].empty() )
+    {
+      world->set( s[i].front().x, s[i].front().y, -1 );
+      std::cout << " " << s[i].front().x << "," << s[i].front().y << std::endl;
+      s[i].pop();
+    }
+
+    std::cout << "generated parallel " << i << std::endl;
+    std::this_thread::sleep_for( std::chrono::milliseconds(1000) );
+  }
+
+  /*std::vector< std::vector< std::packaged_task< void( World*, ChunkQueue* ) > > > chunks;
 
   chunks.resize( world->size().x );
   for ( unsigned int x = 0; x < world->size().x; x++ )
@@ -132,8 +136,5 @@ void generate( World* world )
       chunks[x][y] = std::packaged_task< void( World*, ChunkQueue* ) >( generateChunkAsync )
 
     }
-  }
-
-
-
+  }*/
 }
