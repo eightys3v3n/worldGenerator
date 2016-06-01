@@ -43,6 +43,9 @@ int main( int argc, char** argv )
   // signals when window is available for use of another thread.
   condition_variable windowCV;
 
+  // signals when a chunk is finished generating.
+  condition_variable chunkGensCV;
+
   // chunk generation sequence algorithm places chunks in this array that can be safely generated in parallel.
   // it then waits until the array is empty before placing the next set of chunks inside.
   // the chunk generator threads read which chunks to generate from this array.
@@ -51,14 +54,19 @@ int main( int argc, char** argv )
   // used to pass events from the drawing thread to the input thread.
   Queue<sf::Event> events;
 
-  // generate function name MUST have '::' in front because of the 'using namespace' statements.
-  // read from chunksToGen and actually generate chunks.
-  thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV );
-
+  // contains all the chunk generating threads.
   vector<thread> chunkGenT;
 
+  // contains statuses for all the chunk generating threads.
+  vector<bool> chunkGenSt(THREADS);
+
+  // generate function name MUST have '::' in front because of the 'using namespace' statements.
+  // read from chunksToGen and actually generate chunks.
+  thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &chunkGensCV, &chunkGenSt );
+
+
   for ( unsigned int t = 0; t < THREADS; t++ )
-    chunkGenT.push_back( thread( generateChunk, &running, &world, &chunksToGen ) );
+    chunkGenT.push_back( thread( generateChunk, &running, &chunkGenSt[t], &world, &chunksToGen, &chunkGensCV ) );
 
   // starts a loop as long as running == true.
   while ( running )

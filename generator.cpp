@@ -13,18 +13,21 @@ typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
 typedef sf::Vector2<double> vector2d;
 
-void generateChunk( bool* running, World* world, Queue<vector2ll>* queue )
+void generateChunk( bool* running, bool* status, World* world, Queue<vector2ll>* queue, std::condition_variable* cv )
 {
+  int type = 0;
+  int r;
+  vector2d land, water;
+  vector2ll pos;
+  std::vector< Chunk* > chunks;
+
+  land = LAND_PROB;
+  water = WATER_PROB;
+
   while ( *running )
   {
-    int type = 0;
-    int r;
-    vector2d land, water;
-    std::vector< Chunk* > chunks;
-    vector2ll pos = queue->first();
-
-    land = LAND_PROB;
-    water = WATER_PROB;
+    pos = queue->first();
+    *status = true;
 
     chunks = surroundingChunks( world, pos.x, pos.y );
 
@@ -50,6 +53,9 @@ void generateChunk( bool* running, World* world, Queue<vector2ll>* queue )
       type = WATER;
 
     world->set( pos.x, pos.y, type );
+
+    *status = false;
+    cv->notify_one();
   }
 }
 
@@ -137,17 +143,17 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   return s;
 }
 
-void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* cv )
+void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, std::condition_variable* childs, std::vector<bool>* chunksSt )
 {
-  std::mutex m;
+  //std::mutex m; // for use with 'notify when to generate'
+  std::mutex ch;
   std::vector<std::thread> threads;
 
   while ( running )
   {
-    std::unique_lock<std::mutex> lk(m);
-
-    // for use once i impliment a 'generate new chunks' event.
-    //cv.wait(lk);
+    std::unique_lock<std::mutex> lk1(ch);
+    //std::unique_lock<std::mutex> lk(m); // for use with 'notify when to generate'
+    //cv.wait(lk); // for use with 'notify when to generate'
 
     // order to generate chunks.
     std::deque< Queue< vector2ll > > s;
@@ -169,6 +175,13 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
 
     std::this_thread::sleep_for( std::chrono::milliseconds( GENERATOR_SLEEP ) );
 
-    chunks->untilEmpty();
+    // while a chunk thread is still generating chunks. needs to check thread bools.
+    while ( chunks->empty() )
+    {
+      std:cerr << "waiting for chunk threads to finish" << std::endl;
+      childs.wait(lk1);
+    }
+
+    std::cerr << "finished generating layer" << std::endl;
   }
 }
