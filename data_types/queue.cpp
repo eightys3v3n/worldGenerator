@@ -11,7 +11,7 @@ class Queue
 public:
   void push(TYPE n); // adds a new last element.
   void pop(); // removes the first element.
-  TYPE& front(); // returns a reference to the first element.
+  TYPE front(); // returns a reference to the first element.
   TYPE first(); // returns and removes the first element.
 
   unsigned int size(); // returns the size of the queue.
@@ -37,7 +37,7 @@ void Queue<TYPE>::push(TYPE nu)
 }
 
 template<typename TYPE>
-TYPE& Queue<TYPE>::front()
+TYPE Queue<TYPE>::front()
 {
   TYPE buf;
   std::unique_lock<std::mutex> lk(m);

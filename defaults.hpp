@@ -8,16 +8,22 @@
 #ifndef LAND
 #define LAND 1
 #define LAND_PROB sf::Vector2<double>{ .x = 0, .y = 69 }
+#define LAND_GROUPING 0 // percent increase in probability for adjacent land chunks
 #endif // LAND
 
 #ifndef WATER
 #define WATER 2
 #define WATER_PROB sf::Vector2<double>{ .x = 70, .y = 99 }
+#define WATER_GROUPING 10 // percent increase in probability for adjacent water chunks
 #endif // WATER
 
 #ifndef DEBUG_COLOUR
 #define DEBUG_COLOUR Red
 #endif // DEBUG_COLOUR
+
+#ifndef BACKGROUND_COLOUR
+#define BACKGROUND_COLOUR Color(100,100,100)
+#endif // BACKGROUND_COLOUR
 
 // how many chunks away should be generated
 #ifndef VIEW_DISTANCE

@@ -7,6 +7,8 @@
 void World::init( long long x, long long y )
 {
   data[x][y].shape.setSize( sf::Vector2f{ CHUNK_SIZE, CHUNK_SIZE } );
+  data[x][y].shape.setFillColor( sf::BACKGROUND_COLOUR );
+  data[x][y].type = 0;
 }
 
 bool World::exists( long long x, long long y )

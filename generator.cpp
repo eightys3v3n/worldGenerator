@@ -14,6 +14,8 @@ typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
 typedef sf::Vector2<double> vector2d;
 
+extern std::mutex stdoutM;
+
 void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ )
 {
   int type = 0;
@@ -21,9 +23,6 @@ void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<
   vector2d land, water;
   vector2ll pos;
   std::vector< Chunk* > chunks;
-
-  land = LAND_PROB;
-  water = WATER_PROB;
 
   while ( *running )
   {
@@ -34,17 +33,20 @@ void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<
 
     chunks = surroundingChunks( world, pos.x, pos.y );
 
+    land = LAND_PROB;
+    water = WATER_PROB;
+
     for ( unsigned int c = 0; c < chunks.size(); c++ )
     {
       if ( chunks[c]->type == LAND )
       {
-        land.y += 5;
-        water.x += 5;
+        land.y += LAND_GROUPING;
+        water.x += LAND_GROUPING;
       }
       else if ( chunks[c]->type == WATER )
       {
-        land.y -= 5;
-        water.y -= 5;
+        land.y -= WATER_GROUPING;
+        water.y -= WATER_GROUPING;
       }
     }
 
@@ -165,7 +167,17 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
     // TODO:currently generates entire sequence but only needs next level.
     s = generateSeq( world, player );
 
-    std::cerr << "waiting for " << queued << " chunks." << std::endl;
+    std::deque< Queue< vector2ll > > a = generateSeq( world, player );
+    while ( ! a[0].empty() )
+    {
+      if ( world->get( a[0].front().x, a[0].front().y )->type != 0 )
+        std::cout << "re-generating chunk " << a[0].front().x << "," << a[0].front().y << std::endl;
+      a[0].pop();
+    }
+
+
+
+    //std::cerr << "waiting for " << queued << " chunks." << std::endl;
     finChunks->untilSize( queued );
     finChunks->clear();
 

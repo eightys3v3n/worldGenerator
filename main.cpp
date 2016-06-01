@@ -15,6 +15,8 @@ using namespace sf;
 
 typedef sf::Vector2<long long> vector2ll;
 
+std::mutex stdoutM; // used to sync multi-threaded stdout stuff.
+
 bool running = true;
 
 int main( int argc, char** argv )
@@ -72,7 +74,7 @@ int main( int argc, char** argv )
   while ( running )
   {
     //cerr << chunksToGen.size() << " chunks to generate." << endl;
-    cerr << generatedChunks.size() << " chunks generated." << endl;
+    //cerr << generatedChunks.size() << " chunks generated." << endl;
 
     input( &window, &running, &world, &player );
     draw( &window, &world, &player );

@@ -25,7 +25,7 @@ void drawWorld( sf::RenderWindow* window, World* world, Entity* player )
 
 void draw( sf::RenderWindow* window, World* world, Entity* player )
 {
-  window->clear( sf::Color(100,100,100) );
+  window->clear( sf::BACKGROUND_COLOUR );
 
   drawWorld( window, world, player );
   window->draw( player->shape );
