@@ -36,21 +36,47 @@ int main( int argc, char** argv )
   player.x = 0;
   player.y = 0;
 
-  condition_variable generatorNoti;
-  Queue<vector2ll> generation;
+  // create an event embedded in the drawing thread that checks for un-generated chunks?
+  condition_variable generationCV;
+
+  // used to signal inputT that it should get and process input.
+  // used to limit the rate of window.pollEvent() calls to the framerate.
+  condition_variable inputCV;
 
   // generate function name MUST have '::' in front because of the 'using namespace' statements.
-  thread generator( ::generate, &world, &player, &generation, &generatorNoti );
+  thread generationT( ::generate, &world, &player, &generation, &generationCV );
 
-  while ( window.isOpen() )
-  {
-    input( window, world, player, generation, generatorNoti );
-    draw( window, world, player );
-  }
+  // chunk generation sequence algorithm places chunks in this array that can be safely generated in parallel.
+  // it then waits until the array is empty before placing the next set of chunks inside.
+  // the chunk generator threads read which chunks to generate from this array.
+  Queue<vector2ll> chunksToGen;
 
-  running = false;
-  generator.join();
+  // retrieves and processes window events (user input).
+  thread inputT( input, &window, &running, &world, &player, &inputCV );
 
-  window.close();
+  thread chunkAlgoT( generate, &running, &world, &player, &chunksToGen, &generationCV );
+
+  vector<thread> chunkGenT;
+
+  for ( unsigned int t = 0; t < THREADS; t++ )
+    chunkGenT.push_back( thread( generateChunk, &world, &chunksToGen ) );
+
+  // starts a loop as long as running == true.
+  draw( &window, &running, &world, &player, &inputCV );
+
+
+  // begin exit sequence
+  // when running == false draw() will return and all threads should stop shortly.
+
+
+  inputT.join();
+  chunkAlgoT.join();
+
+  for ( auto& t : chunkGenT )
+    t.join();
+
+  if ( window.isOpen() )
+    window.close();
+
   return false;
 }
