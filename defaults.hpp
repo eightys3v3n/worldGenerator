@@ -21,9 +21,9 @@
 #define DEBUG_COLOUR Red
 #endif // DEBUG_COLOUR
 
-#ifndef BACKGROUND_COLOUR
-#define BACKGROUND_COLOUR Color(100,100,100)
-#endif // BACKGROUND_COLOUR
+#ifndef BG_COLOUR
+#define BG_COLOUR Color(100,100,100)
+#endif // BG_COLOUR
 
 // how many chunks away should be generated
 #ifndef VIEW_DISTANCE
