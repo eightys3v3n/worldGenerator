@@ -10,6 +10,7 @@
 typedef sf::Vector2<long long> vector2ll;
 
 void generateChunk( World* world, Queue* queue );
-void generate( World* world, Entity* player, Queue<vector2ll>* q, std::condition_variable* cv );
+std::deque< Queue< vector2ll > > generateSeq( World* world );
+void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* cv );
 
 #endif // GENERATOR_

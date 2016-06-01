@@ -1,10 +1,7 @@
-#include <iostream>
 #include <vector>
 #include <chrono>
 #include <thread>
-#include <chrono>
 #include <queue>
-#include <mutex>
 #include <condition_variable>
 #include <SFML/System.hpp>
 #include "defaults.hpp"
@@ -58,106 +55,109 @@ void generateChunk( World* world, Queue* queue )
   }
 }
 
-void generate( World* world, Entity* player, Queue<vector2ll>* q, std::condition_variable* cv )
+std::deque< Queue< vector2ll > > generateSeq( World* world )
 {
-  std::mutex m;
+  std::deque< Queue< vector2ll > > s;
+
+  for ( unsigned int r = 0; r <= VIEW_DISTANCE; r++ )
+  {
+    if ( r == 0 )
+    {
+      s.resize( s.size() + 1 );
+      s[ s.size() - 1].push( vector2ll{0,0} );
+      continue;
+    }
+
+    for ( unsigned int l = 0; l <= r; l++ ) // expand in the x direction
+    {
+      s.resize( s.size() + 1 );
+
+      if ( l == 0 )
+      {
+        if ( world->get(x-r, y)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x-r, y} );
+
+        if ( world->get(x+r, y)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x+r, y} );
+      }
+      else
+      {
+        if ( world->get(x+r, y-l)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x+r, y-l} );
+
+        if ( world->get(x-r, y-l)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x-r, y-l} );
+
+        if ( world->get(x+r, y+l)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x+r, y+l} );
+
+        if ( world->get(x-r, y+l)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x-r, y+l} );
+      }
+
+      if ( s[ s.size() - 1 ].size() == 0 )
+        s.resize( s.size() - 1 );
+    }
+
+    for ( unsigned int l = 0; l < r; l++ ) // expand in the y direction
+    {
+      s.resize( s.size() + 1 );
+
+      if ( l == 0 )
+      {
+        if ( world->get(x, y-r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x, y-r} );
+
+        if ( world->get(x, y+r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x, y+r} );
+      }
+      else
+      {
+        if ( world->get(x-l, y+r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x-l, y+r} );
+
+        if ( world->get(x-l, y-r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x-l, y-r} );
+
+        if ( world->get(x+l, y+r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x+l, y+r} );
+
+        if ( world->get(x+l, y-r)->type == 0 )
+          s[ s.size() - 1 ].push( vector2ll{x+l, y-r} );
+      }
+
+      if ( s[ s.size() - 1 ].size() == 0 )
+        s.resize( s.size() - 1 );
+    }
+  }
+
+  return s;
+}
+
+void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* cv )
+{
+  std::mutex;
+  std::vector<thread> threads;
 
   while ( running )
   {
     std::unique_lock<std::mutex> lk(m);
-    while ( q->empty() )
-      cv->wait(lk);
 
+    // for use once i impliment a 'generate new chunks' event.
+    //cv.wait(lk);
+
+    long long x = player.x;
+    long long y = player.y;
+
+    // order to generate chunks.
     std::deque< Queue< vector2ll > > s;
-    std::vector< std::thread > threads;
 
-    long long x = q->front().x;
-    long long y = q->front().y;
-    q->pop();
+    // TODO:currently generates entire sequence but only needs next level.
+    s = generateSeq( world );
 
-    // chunk generation sequence algorythm
-    for ( unsigned int r = 0; r <= VIEW_DISTANCE; r++ )
-    {
-      if ( r == 0 )
-      {
-        s.resize( s.size() + 1 );
-        s[ s.size() - 1].push( vector2ll{0,0} );
-        continue;
-      }
+    while ( ! s[i].empty() )
+      chunks->push( s[i].front() );
 
-      for ( unsigned int l = 0; l <= r; l++ ) // expand in the x direction
-      {
-        s.resize( s.size() + 1 );
-
-        if ( l == 0 )
-        {
-          if ( world->get(x-r, y)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x-r, y} );
-
-          if ( world->get(x+r, y)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x+r, y} );
-        }
-        else
-        {
-          if ( world->get(x+r, y-l)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x+r, y-l} );
-
-          if ( world->get(x-r, y-l)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x-r, y-l} );
-
-          if ( world->get(x+r, y+l)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x+r, y+l} );
-
-          if ( world->get(x-r, y+l)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x-r, y+l} );
-        }
-
-        if ( s[ s.size() - 1 ].size() == 0 )
-          s.resize( s.size() - 1 );
-      }
-
-      for ( unsigned int l = 0; l < r; l++ ) // expand in the y direction
-      {
-        s.resize( s.size() + 1 );
-
-        if ( l == 0 )
-        {
-          if ( world->get(x, y-r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x, y-r} );
-
-          if ( world->get(x, y+r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x, y+r} );
-        }
-        else
-        {
-          if ( world->get(x-l, y+r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x-l, y+r} );
-
-          if ( world->get(x-l, y-r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x-l, y-r} );
-
-          if ( world->get(x+l, y+r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x+l, y+r} );
-
-          if ( world->get(x+l, y-r)->type == 0 )
-            s[ s.size() - 1 ].push( vector2ll{x+l, y-r} );
-        }
-
-        if ( s[ s.size() - 1 ].size() == 0 )
-          s.resize( s.size() - 1 );
-      }
-    }
-    // end chunk generation sequence algorythm
-
-    for ( unsigned int i = 0; i < s.size(); i++ )
-    {
-      while ( ! s[i].empty() )
-      {
-        threads.push_back( thread( generateChunk, world, s[i].front()) );
-      }
-
-      std::cout << "generated parallel " << i << std::endl;
-      std::this_thread::sleep_for( std::chrono::milliseconds(100) );
-    }
+    std::this_thread::sleep_for( std::chrono::milliseconds( GENERATOR_SLEEP ) );
   }
 }
