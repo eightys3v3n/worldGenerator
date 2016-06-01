@@ -51,20 +51,14 @@ int main( int argc, char** argv )
   // used to pass events from the drawing thread to the input thread.
   Queue<sf::Event> events;
 
-  cerr << "started input thread" << endl;
-
   // generate function name MUST have '::' in front because of the 'using namespace' statements.
   // read from chunksToGen and actually generate chunks.
   thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV );
-
-  cerr << "started chunk algorithm thread" << endl;
 
   vector<thread> chunkGenT;
 
   for ( unsigned int t = 0; t < THREADS; t++ )
     chunkGenT.push_back( thread( generateChunk, &running, &world, &chunksToGen ) );
-
-  cerr << "started chunk generation threads" << endl;
 
   // starts a loop as long as running == true.
   while ( running )
@@ -73,17 +67,18 @@ int main( int argc, char** argv )
     draw( &window, &world, &player );
   }
 
-  cerr << "exiting" << endl;
 
   // begin exit sequence
   // when running == false draw() will return and all threads should stop shortly.
-
+  cerr << "exiting" << endl;
 
   if ( window.isOpen() )
     window.close();
 
+  cerr << "waiting for chunk algorithm" << endl;
   chunkAlgoT.join();
 
+  cerr << "waiting for chunk generators" << endl;
   for ( auto& t : chunkGenT )
     t.join();
 

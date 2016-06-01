@@ -33,7 +33,7 @@
 #endif // SCREEN_Y
 
 #ifndef GENERATOR_SLEEP
-#define GENERATOR_SLEEP 100 // ms
+#define GENERATOR_SLEEP 300 // ms
 #endif // GENERATOR_SLEEP
 
 // the amount of threads to use for chunk generation.

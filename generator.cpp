@@ -63,8 +63,11 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   {
     if ( r == 0 )
     {
-      s.resize( s.size() + 1 );
-      s[ s.size() - 1].push( vector2ll{0,0} );
+      if ( world->get(x,y)->type == 0 )
+      {
+        s.resize( s.size() + 1 );
+        s[ s.size() - 1].push( vector2ll{x,y} );
+      }
       continue;
     }
 
@@ -151,10 +154,21 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
 
     // TODO:currently generates entire sequence but only needs next level.
     s = generateSeq( world, player );
+    std::deque< Queue< vector2ll > > a = generateSeq(world,player);
+
+    while ( ! a[0].empty() )
+    {
+      if ( world->get(a[0].front().x, a[0].front().y)->type != 0 )
+        std::cerr << " regenerating chunk " << a[0].front().x << "," << a[0].front().y << "|" << world->get(a[0].front().x, a[0].front().y)->type << std::endl;
+      a[0].pop();
+    }
+
 
     while ( ! s[0].empty() )
-      chunks->push( s[0].front() );
+      chunks->push( s[0].first() );
 
     std::this_thread::sleep_for( std::chrono::milliseconds( GENERATOR_SLEEP ) );
+
+    chunks->untilEmpty();
   }
 }
