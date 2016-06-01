@@ -28,11 +28,11 @@ private:
 };
 
 template<typename TYPE>
-void Queue<TYPE>::push(TYPE n)
+void Queue<TYPE>::push(TYPE nu)
 {
   std::unique_lock<std::mutex> lk(newM);
 
-  q.push(n);
+  q.push(nu);
 
   lk.unlock();
 
@@ -100,7 +100,7 @@ bool Queue<TYPE>::empty()
 template<typename TYPE>
 void Queue<TYPE>::clear()
 {
-  unique_lock<std::mutex> lk(newM);
+  std::unique_lock<std::mutex> lk(newM);
 
   while ( ! q.empty() )
     q.pop();
@@ -111,7 +111,7 @@ void Queue<TYPE>::clear()
 template<typename TYPE>
 void Queue<TYPE>::untilEmpty()
 {
-  unique_lock<std::mutex> lk(oldM);
+  std::unique_lock<std::mutex> lk(oldM);
 
   while ( ! q.empty() )
     o.wait(lk);

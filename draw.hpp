@@ -5,8 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include "world.hpp"
 #include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
 
 void drawWorld( sf::RenderWindow& window, World& world, Entity& player );
-void draw( sf::RenderWindow* window, bool* running, World* world, Entity* player, std::condition_variable* inputCV );
+void draw( sf::RenderWindow* window, World* world, Entity* player );
 
 #endif // WINDOW_

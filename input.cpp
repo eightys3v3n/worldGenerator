@@ -1,60 +1,46 @@
 #include <iostream>
 #include <condition_variable>
+#include <thread>
+#include <chrono>
 #include <SFML/Graphics.hpp>
 #include "world.hpp"
 #include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
 
-void input( sf::RenderWindow* window, bool* running, World* world, Entity* player, std::condition_variable* in )
+void input( sf::RenderWindow* window, bool* running, World* world, Entity* player )
 {
-  while ( *running )
-  {
-    sf::Event event;
+  sf::Event e;
 
-    while ( window.pollEvent( event) )
+  while ( window->pollEvent(e) )
+  {
+    switch ( e.type )
     {
-      switch ( event.type )
+    case sf::Event::Closed:
+      *running = false;
+      break;
+
+    case sf::Event::TextEntered:
+      switch ( e.text.unicode )
       {
-      case sf::Event::Closed:
-        window.close();
+      case 119: // w
+        player->y--; // move player up
         break;
 
-      case sf::Event::TextEntered:
-        switch ( event.text.unicode )
-        {
-        case 119: // w
-          player.y--; // move player up
-          std::cout << "player " << player.x << "," << player.y << std::endl;
+      case 97: // a
+        player->x--; // move player left
+        break;
 
-          break;
+      case 115: // s
+        player->y++; // move player down
+        break;
 
-        case 97: // a
-          player.x--; // move player left
-          std::cout << "player " << player.x << "," << player.y << std::endl;
-          //generator.clear();
-          generator.push( vector2ll{ player.x, player.y } );
-          cv.notify_one();
-          break;
+      case 100: // d
+        player->x++; // move player right
+        break;
 
-        case 115: // s
-          player.y++; // move player down
-          std::cout << "player " << player.x << "," << player.y << std::endl;
-          //generator.clear();
-          generator.push( vector2ll{ player.x, player.y } );
-          cv.notify_one();
-          break;
-
-        case 100: // d
-          player.x++; // move player right
-          std::cout << "player " << player.x << "," << player.y << std::endl;
-          //generator.clear();
-          generator.push( vector2ll{ player.x, player.y } );
-          cv.notify_one();
-          break;
-
-        default:
-          std::cout << event.text.unicode << std::endl;
-          break;
-        }
+      default:
+        std::cout << e.text.unicode << std::endl;
+        break;
       }
     }
   }

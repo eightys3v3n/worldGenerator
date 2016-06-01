@@ -35,3 +35,8 @@
 #ifndef GENERATOR_SLEEP
 #define GENERATOR_SLEEP 100 // ms
 #endif // GENERATOR_SLEEP
+
+// the amount of threads to use for chunk generation.
+#ifndef THREADS
+#define THREADS 4
+#endif // THREADS

@@ -1,6 +1,13 @@
 #ifndef INPUT_
 #define INPUT_
 
-void input( sf::RenderWindow* window, bool* running, World* world, Entity* player, std::condition_variable* in );
+#include <condition_variable>
+#include <mutex>
+#include <SFML/Graphics.hpp>
+#include "world.hpp"
+#include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
+
+void input( sf::RenderWindow* window, bool* running, World* world, Entity* player );
 
 #endif // INPUT_

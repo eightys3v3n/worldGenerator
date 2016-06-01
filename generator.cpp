@@ -6,24 +6,22 @@
 #include <SFML/System.hpp>
 #include "defaults.hpp"
 #include "world.hpp"
-#include "window.hpp"
 #include "data_types/queue.hpp"
 #include "data_types/entity.hpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
+typedef sf::Vector2<long long> vector2ll;
 typedef sf::Vector2<double> vector2d;
 
-extern bool running;
-
-void generateChunk( World* world, Queue* queue )
+void generateChunk( bool* running, World* world, Queue<vector2ll>* queue )
 {
-  while ( running )
+  while ( *running )
   {
     int type = 0;
     int r;
     vector2d land, water;
     std::vector< Chunk* > chunks;
-    vector2ll pos = queue.first();
+    vector2ll pos = queue->first();
 
     land = LAND_PROB;
     water = WATER_PROB;
@@ -55,9 +53,11 @@ void generateChunk( World* world, Queue* queue )
   }
 }
 
-std::deque< Queue< vector2ll > > generateSeq( World* world )
+std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
 {
   std::deque< Queue< vector2ll > > s;
+  long long x = player->x;
+  long long y = player->y;
 
   for ( unsigned int r = 0; r <= VIEW_DISTANCE; r++ )
   {
@@ -136,8 +136,8 @@ std::deque< Queue< vector2ll > > generateSeq( World* world )
 
 void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* cv )
 {
-  std::mutex;
-  std::vector<thread> threads;
+  std::mutex m;
+  std::vector<std::thread> threads;
 
   while ( running )
   {
@@ -146,17 +146,14 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
     // for use once i impliment a 'generate new chunks' event.
     //cv.wait(lk);
 
-    long long x = player.x;
-    long long y = player.y;
-
     // order to generate chunks.
     std::deque< Queue< vector2ll > > s;
 
     // TODO:currently generates entire sequence but only needs next level.
-    s = generateSeq( world );
+    s = generateSeq( world, player );
 
-    while ( ! s[i].empty() )
-      chunks->push( s[i].front() );
+    while ( ! s[0].empty() )
+      chunks->push( s[0].front() );
 
     std::this_thread::sleep_for( std::chrono::milliseconds( GENERATOR_SLEEP ) );
   }
