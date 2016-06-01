@@ -32,11 +32,12 @@
 #define SCREEN_Y 50
 #endif // SCREEN_Y
 
-#ifndef GENERATOR_SLEEP
-#define GENERATOR_SLEEP 300 // ms
-#endif // GENERATOR_SLEEP
-
 // the amount of threads to use for chunk generation.
 #ifndef THREADS
 #define THREADS 4
 #endif // THREADS
+
+// a delay for generating a chunk; it makes it easier to see how they are being generated.
+#ifndef GENERATION_DELAY
+#define GENERATION_DELAY 90 // ms
+#endif // GENERATION_DELAY

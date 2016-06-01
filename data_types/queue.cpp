@@ -9,78 +9,77 @@ template<typename TYPE>
 class Queue
 {
 public:
-  void push(TYPE n);
-  TYPE& front();
-  void pop();
-  TYPE first();
+  void push(TYPE n); // adds a new last element.
+  void pop(); // removes the first element.
+  TYPE& front(); // returns a reference to the first element.
+  TYPE first(); // returns and removes the first element.
 
-  unsigned int size();
+  unsigned int size(); // returns the size of the queue.
+  void clear(); // clears the queue.
   bool empty();
-  void clear();
-  void untilEmpty();
+  void untilSize( unsigned int s ); // blocks until size is s.
 
 private:
   std::queue<TYPE> q; // the queue.
-  std::condition_variable n; // used to wait for a new element in the queue.
-  std::condition_variable o; // used to wait until the queue is empty.
-  std::mutex newM; // used with n
-  std::mutex oldM; // used with o
+  std::condition_variable cv; // notified on queue modification.
+  std::mutex m; // modification to queue contents.
 };
 
 template<typename TYPE>
 void Queue<TYPE>::push(TYPE nu)
 {
-  std::unique_lock<std::mutex> lk(newM);
+  std::unique_lock<std::mutex> lk(m);
 
   q.push(nu);
 
   lk.unlock();
-
-  // notify front(), first(), pop() that a new element is available.
-  n.notify_one();
+  cv.notify_all();
 }
 
 template<typename TYPE>
 TYPE& Queue<TYPE>::front()
 {
-  std::unique_lock<std::mutex> lk(newM);
+  TYPE buf;
+  std::unique_lock<std::mutex> lk(m);
 
   while( q.empty() )
-    n.wait(lk);
+    cv.wait(lk);
 
-  return q.front();
+  buf = q.front();
+
+  lk.unlock();
+
+  return buf;
 }
 
 template<typename TYPE>
 void Queue<TYPE>::pop()
 {
-  std::unique_lock<std::mutex> lk(newM);
+  std::unique_lock<std::mutex> lk(m);
 
-  while ( q.empty() )
-    n.wait(lk);
-
+  if ( ! q.empty() )
   q.pop();
 
   lk.unlock();
+  cv.notify_all();
 }
 
 template<typename TYPE>
 TYPE Queue<TYPE>::first()
 {
   TYPE buf;
-  std::unique_lock<std::mutex> lk(newM);
+  std::unique_lock<std::mutex> lk(m);
 
   while ( q.empty() )
-    n.wait(lk);
+    cv.wait(lk);
 
   buf = q.front();
+
   q.pop();
 
   lk.unlock();
 
-  // notify untilEmpty() that the queue is empty.
-  if ( q.empty() )
-    o.notify_one();
+  cv.notify_all();
 
   return buf;
 }
@@ -92,27 +91,32 @@ unsigned int Queue<TYPE>::size()
 }
 
 template<typename TYPE>
+void Queue<TYPE>::clear()
+{
+  std::unique_lock<std::mutex> lk(m);
+
+  while ( ! q.empty() )
+    q.pop();
+
+  lk.unlock();
+
+  cv.notify_all();
+}
+
+template<typename TYPE>
 bool Queue<TYPE>::empty()
 {
   return q.empty();
 }
 
 template<typename TYPE>
-void Queue<TYPE>::clear()
+void Queue<TYPE>::untilSize( unsigned int s )
 {
-  std::unique_lock<std::mutex> lk(newM);
+  std::mutex t;
+  std::unique_lock<std::mutex> lk(t);
 
-  while ( ! q.empty() )
-    q.pop();
+  while ( q.size() != s )
+    cv.wait(lk);
 
   lk.unlock();
-}
-
-template<typename TYPE>
-void Queue<TYPE>::untilEmpty()
-{
-  std::unique_lock<std::mutex> lk(oldM);
-
-  while ( ! q.empty() )
-    o.wait(lk);
 }

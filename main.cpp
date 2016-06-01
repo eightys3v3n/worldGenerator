@@ -51,26 +51,29 @@ int main( int argc, char** argv )
   // the chunk generator threads read which chunks to generate from this array.
   Queue<vector2ll> chunksToGen;
 
+  // chunks are moved from chunksToGen to here once they are finished.
+  Queue<vector2ll> generatedChunks;
+
   // used to pass events from the drawing thread to the input thread.
   Queue<sf::Event> events;
 
   // contains all the chunk generating threads.
   vector<thread> chunkGenT;
 
-  // contains statuses for all the chunk generating threads.
-  vector<bool> chunkGenSt(THREADS);
-
   // generate function name MUST have '::' in front because of the 'using namespace' statements.
   // read from chunksToGen and actually generate chunks.
-  thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &chunkGensCV, &chunkGenSt );
+  thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
 
 
   for ( unsigned int t = 0; t < THREADS; t++ )
-    chunkGenT.push_back( thread( generateChunk, &running, &chunkGenSt[t], &world, &chunksToGen, &chunkGensCV ) );
+    chunkGenT.push_back( thread( generateChunk, &running, &world, &chunksToGen, &generatedChunks ) );
 
   // starts a loop as long as running == true.
   while ( running )
   {
+    //cerr << chunksToGen.size() << " chunks to generate." << endl;
+    cerr << generatedChunks.size() << " chunks generated." << endl;
+
     input( &window, &running, &world, &player );
     draw( &window, &world, &player );
   }

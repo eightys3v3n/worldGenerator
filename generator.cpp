@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -13,7 +14,7 @@ typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
 typedef sf::Vector2<double> vector2d;
 
-void generateChunk( bool* running, bool* status, World* world, Queue<vector2ll>* queue, std::condition_variable* cv )
+void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ )
 {
   int type = 0;
   int r;
@@ -27,7 +28,9 @@ void generateChunk( bool* running, bool* status, World* world, Queue<vector2ll>*
   while ( *running )
   {
     pos = queue->first();
-    *status = true;
+
+    if ( ! *running )
+      break;
 
     chunks = surroundingChunks( world, pos.x, pos.y );
 
@@ -52,10 +55,10 @@ void generateChunk( bool* running, bool* status, World* world, Queue<vector2ll>*
     else if ( r >= water.x && r <= water.y )
       type = WATER;
 
-    world->set( pos.x, pos.y, type );
+    std::this_thread::sleep_for( std::chrono::milliseconds( GENERATION_DELAY ) );
 
-    *status = false;
-    cv->notify_one();
+    world->set( pos.x, pos.y, type );
+    finQ->push(pos);
   }
 }
 
@@ -143,13 +146,14 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   return s;
 }
 
-void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, std::condition_variable* childs, std::vector<bool>* chunksSt )
+void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks )
 {
   //std::mutex m; // for use with 'notify when to generate'
   std::mutex ch;
   std::vector<std::thread> threads;
+  unsigned int queued = 0;
 
-  while ( running )
+  while ( *running )
   {
     std::unique_lock<std::mutex> lk1(ch);
     //std::unique_lock<std::mutex> lk(m); // for use with 'notify when to generate'
@@ -160,28 +164,18 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
 
     // TODO:currently generates entire sequence but only needs next level.
     s = generateSeq( world, player );
-    std::deque< Queue< vector2ll > > a = generateSeq(world,player);
 
-    while ( ! a[0].empty() )
-    {
-      if ( world->get(a[0].front().x, a[0].front().y)->type != 0 )
-        std::cerr << " regenerating chunk " << a[0].front().x << "," << a[0].front().y << "|" << world->get(a[0].front().x, a[0].front().y)->type << std::endl;
-      a[0].pop();
-    }
+    std::cerr << "waiting for " << queued << " chunks." << std::endl;
+    finChunks->untilSize( queued );
+    finChunks->clear();
 
+    queued = s[0].size();
 
     while ( ! s[0].empty() )
       chunks->push( s[0].first() );
-
-    std::this_thread::sleep_for( std::chrono::milliseconds( GENERATOR_SLEEP ) );
-
-    // while a chunk thread is still generating chunks. needs to check thread bools.
-    while ( chunks->empty() )
-    {
-      std:cerr << "waiting for chunk threads to finish" << std::endl;
-      childs.wait(lk1);
-    }
-
-    std::cerr << "finished generating layer" << std::endl;
   }
+
+  // to resume chunk generation threads; they will not generate a chunk if running is false.
+  for ( unsigned int t = 0; t < THREADS; t++ )
+    chunks->push( vector2ll{0,0} );
 }
