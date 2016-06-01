@@ -7,8 +7,14 @@
 #include "world.hpp"
 #include "generator.hpp"
 #include "window.hpp"
+#include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
 using namespace std;
 using namespace sf;
+
+typedef sf::Vector2<long long> vector2ll;
+
+bool running = true;
 
 int main( int argc, char** argv )
 {
@@ -17,27 +23,32 @@ int main( int argc, char** argv )
   else
     srand( 1337 );
 
-  bool running = true;
 
-  RenderWindow window( VideoMode(510,510), "game", Style::Close );
-  window.setFramerateLimit(61);
+  RenderWindow window( VideoMode( CHUNK_SIZE * SCREEN_X, CHUNK_SIZE * SCREEN_Y), "game", Style::Close );
+  window.setFramerateLimit(31);
 
   World world;
-  world.size( window.getSize().x / CHUNK_SIZE, window.getSize().y / CHUNK_SIZE);
 
-  RectangleShape player;
-  player.setSize( Vector2f( CHUNK_SIZE, CHUNK_SIZE ) );
-  player.setPosition( world.size().x / 2 * CHUNK_SIZE, world.size().y / 2 * CHUNK_SIZE );
-  player.setFillColor( Color::Black );
+  Entity player;
+  player.shape.setSize( Vector2f( CHUNK_SIZE, CHUNK_SIZE ) );
+  player.shape.setPosition(250,250);
+  player.shape.setFillColor( Color::Black );
+  player.x = 0;
+  player.y = 0;
 
-  thread generator( ::generate, &world ); // generate function name MUST have '::' in front because of the 'using namespace' statements.
+  condition_variable generatorNoti;
+  Queue<vector2ll> generation;
+
+  // generate function name MUST have '::' in front because of the 'using namespace' statements.
+  thread generator( ::generate, &world, &player, &generation, &generatorNoti );
 
   while ( window.isOpen() )
   {
-    input( window, world );
+    input( window, world, player, generation, generatorNoti );
     draw( window, world, player );
   }
 
+  running = false;
   generator.join();
 
   window.close();

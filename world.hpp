@@ -8,31 +8,27 @@
 #include "defaults.hpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
+typedef sf::Vector2<long long> vector2ll;
 
-struct World
+class World
 {
-  std::vector< std::vector< Chunk > > map;
-  std::vector< std::vector< sf::RectangleShape > > mapShapes;
+public:
+  void init( long long x, long long y );
+  bool exists( long long x, long long y );
+  long long size();
+  void set( long long x, long long y, int t );
+  void set( vector2ll pos, int t );
+  Chunk* get( long long x, long long y );
+  Chunk* get( vector2ll pos );
 
-  vector2ui size();
-  void size( unsigned int x, unsigned int y );
-  void size( vector2ui newSize );
-  void set( unsigned int x, unsigned int y, int newType );
-  void set( vector2ui pos, int newType );
-  int getType( unsigned int x, unsigned int y );
-  int getType( vector2ui pos );
-  sf::RectangleShape& getShape( unsigned int x, unsigned int y );
-  sf::RectangleShape& getShape( vector2ui pos );
+  sf::RectangleShape& shape( long long x, long long y );
+  sf::RectangleShape& shape( vector2ll pos );
 
-  // code for fun; will not be used once the world is larger than the screen
-  void shiftDown();
-  void shiftRight();
-  void shiftUp();
-  void shiftLeft();
-  // end code for fun
+//private:
+  std::map< long long, std::map< long long, Chunk > > data;
 };
 
-std::vector< Chunk > surroundingChunks( World* world, unsigned int x, unsigned int y );
-std::vector< Chunk > surroundingChunks( World* world, vector2ui pos );
+std::vector< Chunk* > surroundingChunks( World* world, long long x, long long y );
+std::vector< Chunk* > surroundingChunks( World* world, vector2ll pos );
 
 #endif // WORLD_

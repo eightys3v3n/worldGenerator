@@ -10,52 +10,6 @@ using namespace chrono;
 
 bool running = true;
 Queue<int> qq;
-/*mutex m;
-condition_variable cv;
-
-template<typename TYPE>
-class Queue
-{
-public:
-  void push(TYPE n)
-  {
-    unique_lock<mutex> lk(m);
-    //cout << "push:locked" << endl;
-    q.push(n);
-    //cout << "push:pushed" << endl;
-    lk.unlock();
-    //cout << "push:unlocked" << endl;
-    cv.notify_one();
-  }
-
-  TYPE pop()
-  {
-    unique_lock<mutex> lk(m);
-    //cout << "pop:locked" << endl;
-    //cout << "pop:waiting for elements" << endl;
-    while ( q.empty() )
-      cv.wait(lk);
-    //cout << "pop:elements exist" << endl;
-
-    TYPE buf = q.front();
-    //cout << "pop:got element " << buf << endl;
-    q.pop();
-    //cout << "pop:removed element" << endl;
-
-    //cout << "pop:unlocked" << endl;
-    lk.unlock();
-    return buf;
-  }
-
-  bool empty()
-  {
-    return q.empty();
-  }
-
-private:
-  queue<TYPE> q;
-};*/
-
 
 void produceF()
 {
@@ -76,8 +30,7 @@ void consumeF(int id)
   {
     while ( ! qq.empty() )
     {
-      cout << "pop" << id << ":" << qq.front() << endl;
-      qq.pop();
+      cout << "pop" << id << ":" << qq.first() << endl;
       this_thread::sleep_for( milliseconds(400) );
     }
   }
@@ -85,6 +38,8 @@ void consumeF(int id)
 
 int main()
 {
+  qq.clear();
+
   cout << "starting consumer" << endl;
   thread consume( consumeF, 0 );
   thread consume1( consumeF, 1 );

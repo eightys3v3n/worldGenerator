@@ -2,21 +2,14 @@
 #define GENERATOR_
 
 #include <thread>
-#include <future>
+#include <condition_variable>
 #include "world.hpp"
+#include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
 
-typedef sf::Vector2<unsigned int> vector2ui;
+typedef sf::Vector2<long long> vector2ll;
 
-struct ChunkQueue
-{
-  vector2ui pos;
-  std::promise< int > p;
-  std::future< int > f = p.get_future();
-  std::vector< std::future< int >* > r;
-};
-
-void generateChunk( World* world, vector2ui pos );
-void generateChunkAsync( int l, int c, World* world, ChunkQueue* chunk );
-void generate( World* world );
+void generateChunk( World* world, Queue* queue );
+void generate( World* world, Entity* player, Queue<vector2ll>* q, std::condition_variable* cv );
 
 #endif // GENERATOR_

@@ -1,39 +1,42 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <condition_variable>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-#include "world.hpp"
 #include "defaults.hpp"
+#include "world.hpp"
+#include "data_types/entity.hpp"
+#include "data_types/queue.hpp"
+#include "generator.hpp"
 
-void drawWorld( sf::RenderWindow& window, World& world )
+void drawWorld( sf::RenderWindow& window, World& world, Entity& player )
 {
-  for ( unsigned int x = 0; x < world.size().x; x++ )
+  for ( long long x = -SCREEN_X / 2; x <= SCREEN_X / 2; x++ )
   {
-    for ( unsigned int y = 0; y < world.size().y; y++ )
+    for ( long long y = -SCREEN_X / 2; y <= SCREEN_Y / 2; y++ )
     {
-      if ( world.getType(x,y) > 0 )
-        window.draw( world.getShape(x,y) );
-
-      else if ( world.getType(x,y) < 0 ) // debug ground type
+      if ( world.exists( player.x + x, player.y + y ) )
       {
-        world.getShape(x,y).setFillColor( sf::Color::DEBUG_COLOUR );
-        window.draw( world.getShape(x,y) );
+        world.shape( player.x + x, player.y + y ).setPosition( CHUNK_SIZE * ( x + (int)SCREEN_X / 2 ), CHUNK_SIZE * ( y + (int)SCREEN_Y / 2 ) );
+        //std::cout << "drawing " << x << "," << y << " @ " << world.shape( player.x + x, player.y + y).getPosition().x << "," << world.shape( player.x + x, player.y + y ).getPosition().y << std::endl;
+        window.draw( world.shape( player.x + x, player.y + y ) );
       }
     }
   }
 }
 
-void draw( sf::RenderWindow& window, World& world, sf::RectangleShape& player )
+void draw( sf::RenderWindow& window, World& world, Entity& player )
 {
   window.clear( sf::Color(100,100,100) );
 
-  drawWorld( window, world );
-  window.draw( player );
+  drawWorld( window, world, player );
+  window.draw( player.shape );
 
   window.display();
 }
 
-void input( sf::RenderWindow& window, World& world )
+void input( sf::RenderWindow& window, World& world, Entity& player, Queue<vector2ll>& generator, std::condition_variable& cv )
 {
   sf::Event event;
 
@@ -49,19 +52,35 @@ void input( sf::RenderWindow& window, World& world )
         switch ( event.text.unicode )
         {
           case 119: // w
-            world.shiftDown(); // move player up
+            player.y--; // move player up
+            std::cout << "player " << player.x << "," << player.y << std::endl;
+            //generator.clear();
+            generator.push( vector2ll{ player.x, player.y } );
+            cv.notify_one();
             break;
 
           case 97: // a
-            world.shiftRight(); // move player left
+            player.x--; // move player left
+            std::cout << "player " << player.x << "," << player.y << std::endl;
+            //generator.clear();
+            generator.push( vector2ll{ player.x, player.y } );
+            cv.notify_one();
             break;
 
           case 115: // s
-            world.shiftUp(); // move player down
+            player.y++; // move player down
+            std::cout << "player " << player.x << "," << player.y << std::endl;
+            //generator.clear();
+            generator.push( vector2ll{ player.x, player.y } );
+            cv.notify_one();
             break;
 
           case 100: // d
-            world.shiftLeft(); // move player right
+            player.x++; // move player right
+            std::cout << "player " << player.x << "," << player.y << std::endl;
+            //generator.clear();
+            generator.push( vector2ll{ player.x, player.y } );
+            cv.notify_one();
             break;
 
           default:

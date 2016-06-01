@@ -20,4 +20,14 @@
 #endif // DEBUG_COLOUR
 
 // how many chunks away should be generated
-#define VIEW_DISTANCE 5
+#ifndef VIEW_DISTANCE
+#define VIEW_DISTANCE 2
+#endif // VIEW_DISTANCE
+
+// size of screen based on chunks
+#ifndef SCREEN_X
+#define SCREEN_X 50
+#endif // SCREEN_X
+#ifndef SCREEN_Y
+#define SCREEN_Y 50
+#endif // SCREEN_Y
