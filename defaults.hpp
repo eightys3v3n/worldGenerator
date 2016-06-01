@@ -31,3 +31,7 @@
 #ifndef SCREEN_Y
 #define SCREEN_Y 50
 #endif // SCREEN_Y
+
+#ifndef GENERATOR_SLEEP
+#define GENERATOR_SLEEP 100 // ms
+#endif // GENERATOR_SLEEP
