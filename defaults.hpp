@@ -1,8 +1,27 @@
-#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 
+// size of screen based on chunks
+#ifndef SCREEN_X
+#define SCREEN_X 32
+#endif // SCREEN_X
+#ifndef SCREEN_Y
+#define SCREEN_Y 32
+#endif // SCREEN_Y
+
+// the chunk width & height.
 #ifndef CHUNK_SIZE
-#define CHUNK_SIZE 10 // chunk width 7 height in pixels; chunks are square
+#define CHUNK_SIZE 16
 #endif // CHUNK_SIZE
+
+// how many chunks away should be generated
+#ifndef VIEW_DISTANCE
+#define VIEW_DISTANCE 2
+#endif // VIEW_DISTANCE
+
+// the amount of threads to use for chunk generation.
+#ifndef THREADS
+#define THREADS 4
+#endif // THREADS
 
 // probabilities of being a given type of ground; between 0-99; must not overlap
 #ifndef LAND
@@ -24,24 +43,6 @@
 #ifndef BG_COLOUR
 #define BG_COLOUR Color(100,100,100)
 #endif // BG_COLOUR
-
-// how many chunks away should be generated
-#ifndef VIEW_DISTANCE
-#define VIEW_DISTANCE 2
-#endif // VIEW_DISTANCE
-
-// size of screen based on chunks
-#ifndef SCREEN_X
-#define SCREEN_X 50
-#endif // SCREEN_X
-#ifndef SCREEN_Y
-#define SCREEN_Y 50
-#endif // SCREEN_Y
-
-// the amount of threads to use for chunk generation.
-#ifndef THREADS
-#define THREADS 4
-#endif // THREADS
 
 // a delay for generating a chunk; it makes it easier to see how they are being generated.
 #ifndef GENERATION_DELAY

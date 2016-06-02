@@ -3,7 +3,6 @@
 #include "defaults.hpp"
 #include "world.hpp"
 
-
 void World::init( long long x, long long y )
 {
   data[x][y].type = 0;
@@ -51,12 +50,12 @@ Chunk* World::get( vector2ll pos )
   return get( pos.x, pos.y );
 }
 
-sf::RectangleShape& World::shape( long long x, long long y )
+sf::CircleShape& World::shape( long long x, long long y )
 {
   return data[x][y].shape;
 }
 
-sf::RectangleShape& World::shape( vector2ll pos )
+sf::CircleShape& World::shape( vector2ll pos )
 {
   return shape( pos.x, pos.y );
 }

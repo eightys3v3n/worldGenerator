@@ -5,13 +5,13 @@ full=$(gcc) $(args)
 
 all: main
 
-main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o
+main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o tmp/entity.type.o
 	$(full) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lpthread -g tmp/* -o main
 
 tmp/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
 	$(part) main.cpp -o tmp/main
 
-tmp/world.o: world.cpp world.hpp data_types/chunk.hpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+tmp/world.o: world.cpp world.hpp data_types/chunk.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
 	$(part) world.cpp -o tmp/world.o
 
 tmp/generator.o: generator.cpp world.hpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
@@ -26,5 +26,8 @@ tmp/draw.o: draw.cpp draw.hpp
 tmp/input.o: input.cpp input.hpp data_types/entity.hpp world.hpp
 	$(part) input.cpp -o tmp/input.o
 
+tmp/entity.type.o: data_types/entity.cpp data_types/entity.hpp
+	$(part) data_types/entity.cpp -o tmp/entity.type.o
+
 clean:
-	if [[ -n tmp/* ]]; then rm tmp/*; fi
+	rm tmp/*

@@ -175,8 +175,6 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
       a[0].pop();
     }
 
-
-
     //std::cerr << "waiting for " << queued << " chunks." << std::endl;
     finChunks->untilSize( queued );
     finChunks->clear();

@@ -4,8 +4,8 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-#include "data_types/chunk.hpp"
 #include "defaults.hpp"
+#include "data_types/chunk.cpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
@@ -21,8 +21,8 @@ public:
   Chunk* get( long long x, long long y );
   Chunk* get( vector2ll pos );
 
-  sf::RectangleShape& shape( long long x, long long y );
-  sf::RectangleShape& shape( vector2ll pos );
+  sf::CircleShape& shape( long long x, long long y );
+  sf::CircleShape& shape( vector2ll pos );
 
 //private:
   std::map< long long, std::map< long long, Chunk > > data;

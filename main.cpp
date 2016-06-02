@@ -33,8 +33,7 @@ int main( int argc, char** argv )
   World world;
 
   Entity player;
-  player.shape.setSize( Vector2f( CHUNK_SIZE, CHUNK_SIZE ) );
-  player.shape.setPosition(250,250);
+  player.shape.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
   player.shape.setFillColor( Color::Black );
   player.x = 0;
   player.y = 0;
@@ -79,7 +78,6 @@ int main( int argc, char** argv )
     input( &window, &running, &world, &player );
     draw( &window, &world, &player );
   }
-
 
   // begin exit sequence
   // when running == false draw() will return and all threads should stop shortly.
