@@ -1,15 +1,17 @@
 #ifndef CHUNK_TYPE
 #define CHUNK_TYPE
 
+#include <cmath>
 #include <SFML/Graphics.hpp>
-//#include "../defaults.hpp"
+#include "../defaults.hpp"
 
 struct Chunk
 {
   Chunk()
   {
-    shape = sf::CircleShape( CHUNK_SIZE / 2, 6 );
+    shape = sf::CircleShape( CHUNK_SIZE_H, 6 );
     shape.setFillColor( sf::BG_COLOUR );
+    shape.setRotation(30);
   }
 
   int type = 0;

@@ -14,10 +14,11 @@ using namespace std;
 using namespace sf;
 
 typedef sf::Vector2<long long> vector2ll;
+typedef sf::Vector2<double> vector2d;
 
-std::mutex stdoutM; // used to sync multi-threaded stdout stuff.
+std::mutex stdoutM; // used to sync multi-threaded debugging messages from threads.
 
-bool running = true;
+bool running = true; // while true, program runs; when false, all threads quit.
 
 int main( int argc, char** argv )
 {
@@ -26,45 +27,45 @@ int main( int argc, char** argv )
   else
     srand( 1337 );
 
+  // variable declarations
+    RenderWindow window( VideoMode( CHUNK_SIZE_D * .75 * SCREEN_X, CHUNK_SIZE_H * SCREEN_Y ), "game", Style::Close );
 
-  RenderWindow window( VideoMode( CHUNK_SIZE * SCREEN_X, CHUNK_SIZE * SCREEN_Y), "game", Style::Close );
+    World world;
+    Entity player;
+
+    // create an event embedded in the drawing thread that checks for un-generated chunks?
+    condition_variable generationCV;
+
+    // signals when window is available for use of another thread.
+    condition_variable windowCV;
+
+    // signals when a chunk is finished generating.
+    condition_variable chunkGensCV;
+
+    // chunk generation sequence algorithm places chunks in this array that can be safely generated in parallel.
+    // it then waits until the array is empty before placing the next set of chunks inside.
+    // the chunk generator threads read which chunks to generate from this array.
+    Queue<vector2ll> chunksToGen;
+
+    // chunks are moved from chunksToGen to here once they are finished.
+    Queue<vector2ll> generatedChunks;
+
+    // used to pass events from the drawing thread to the input thread.
+    Queue<sf::Event> events;
+
+    // contains all the chunk generating threads.
+    vector<thread> chunkGenT;
+
+    // generate function name MUST have '::' in front because of the 'using namespace' statements.
+    // read from chunksToGen and actually generate chunks.
+    thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
+
   window.setFramerateLimit(31);
 
-  World world;
-
-  Entity player;
   player.shape.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
   player.shape.setFillColor( Color::Black );
   player.x = 0;
   player.y = 0;
-
-  // create an event embedded in the drawing thread that checks for un-generated chunks?
-  condition_variable generationCV;
-
-  // signals when window is available for use of another thread.
-  condition_variable windowCV;
-
-  // signals when a chunk is finished generating.
-  condition_variable chunkGensCV;
-
-  // chunk generation sequence algorithm places chunks in this array that can be safely generated in parallel.
-  // it then waits until the array is empty before placing the next set of chunks inside.
-  // the chunk generator threads read which chunks to generate from this array.
-  Queue<vector2ll> chunksToGen;
-
-  // chunks are moved from chunksToGen to here once they are finished.
-  Queue<vector2ll> generatedChunks;
-
-  // used to pass events from the drawing thread to the input thread.
-  Queue<sf::Event> events;
-
-  // contains all the chunk generating threads.
-  vector<thread> chunkGenT;
-
-  // generate function name MUST have '::' in front because of the 'using namespace' statements.
-  // read from chunksToGen and actually generate chunks.
-  thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
-
 
   for ( unsigned int t = 0; t < THREADS; t++ )
     chunkGenT.push_back( thread( generateChunk, &running, &world, &chunksToGen, &generatedChunks ) );

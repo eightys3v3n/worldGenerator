@@ -16,7 +16,7 @@ void drawWorld( sf::RenderWindow* window, World* world, Entity* player )
     {
       if ( world->exists( player->x + x, player->y + y ) )
       {
-        world->shape( player->x + x, player->y + y ).setPosition( CHUNK_SIZE * /* (double)2/3 **/ ( x + SCREEN_X / 2 ), CHUNK_SIZE * ( y + SCREEN_Y / 2 ) );
+        world->shape( player->x + x, player->y + y ).setPosition( CHUNK_SIZE_D * /* (double)2/3 **/ ( x + SCREEN_X / 2 ), CHUNK_SIZE_D * ( y + SCREEN_Y / 2 ) );
         window->draw( world->shape( player->x + x, player->y + y ) );
       }
     }

@@ -9,9 +9,10 @@
 #endif // SCREEN_Y
 
 // the chunk width & height.
-#ifndef CHUNK_SIZE
-#define CHUNK_SIZE 16
-#endif // CHUNK_SIZE
+#ifndef CHUNK_SIZE_D
+#define CHUNK_SIZE_D 16
+#define CHUNK_SIZE_H 18.47520861406802446429
+#endif // CHUNK_SIZE_D
 
 // how many chunks away should be generated
 #ifndef VIEW_DISTANCE
