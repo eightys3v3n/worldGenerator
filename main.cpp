@@ -62,7 +62,7 @@ int main( int argc, char** argv )
 
   window.setFramerateLimit(31);
 
-  player.shape.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
+  player.shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
   player.shape.setFillColor( Color::Black );
   player.x = 0;
   player.y = 0;

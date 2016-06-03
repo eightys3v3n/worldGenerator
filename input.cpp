@@ -24,18 +24,42 @@ void input( sf::RenderWindow* window, bool* running, World* world, Entity* playe
       {
       case 119: // w
         player->y--; // move player up
+
+        if ( player->x % 2 == 0 )
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
+        else
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 + CHUNK_dIAMETER / 2);
+
         break;
 
       case 97: // a
         player->x--; // move player left
+
+        if ( player->x % 2 == 0 )
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
+        else
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 + CHUNK_dIAMETER / 2);
+
         break;
 
       case 115: // s
         player->y++; // move player down
+
+        if ( player->x % 2 == 0 )
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
+        else
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 + CHUNK_dIAMETER / 2);
+
         break;
 
       case 100: // d
         player->x++; // move player right
+
+        if ( player->x % 2 == 0 )
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
+        else
+          player->shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 + CHUNK_dIAMETER / 2);
+
         break;
 
       default:

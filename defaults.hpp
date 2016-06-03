@@ -18,7 +18,7 @@
 
 // how many chunks away should be generated
 #ifndef VIEW_DISTANCE
-#define VIEW_DISTANCE 2
+#define VIEW_DISTANCE 4
 #endif // VIEW_DISTANCE
 
 // the amount of threads to use for chunk generation.
@@ -49,5 +49,5 @@
 
 // a delay for generating a chunk; it makes it easier to see how they are being generated.
 #ifndef GENERATION_DELAY
-#define GENERATION_DELAY 90 // ms
+#define GENERATION_DELAY 40 // ms
 #endif // GENERATION_DELAY

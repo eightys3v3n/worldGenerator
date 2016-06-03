@@ -5,4 +5,5 @@
 Entity::Entity()
 {
   shape = sf::CircleShape( CHUNK_DIAMETER / 2, 6 );
+  shape.setRotation(30);
 }
