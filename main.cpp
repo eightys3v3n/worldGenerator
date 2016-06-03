@@ -28,7 +28,7 @@ int main( int argc, char** argv )
     srand( 1337 );
 
   // variable declarations
-    RenderWindow window( VideoMode( CHUNK_SIZE_D * .75 * SCREEN_X, CHUNK_SIZE_H * SCREEN_Y ), "game", Style::Close );
+    RenderWindow window( VideoMode( CHUNK_DIAMETER * .75 * SCREEN_X + CHUNK_dIAMETER / 2, CHUNK_dIAMETER * SCREEN_Y ), "game", Style::Close );
 
     World world;
     Entity player;

@@ -4,5 +4,5 @@
 
 Entity::Entity()
 {
-  shape = sf::CircleShape( CHUNK_SIZE_H, 6 );
+  shape = sf::CircleShape( CHUNK_DIAMETER / 2, 6 );
 }
