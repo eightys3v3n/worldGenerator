@@ -24,12 +24,10 @@ public:
   unsigned int size(); // returns the size of the queue.
   void untilSize( unsigned int s ); // blocks until size is s.
 
-  bool lock();
+  void lock();
   bool unlock();
 
 private:
-  bool owned = false;
-  std::thread::id id;
   std::queue<TYPE> q; // the queue.
   std::condition_variable cv; // notified on queue modification.
   std::mutex m; // modification to queue contents.
@@ -136,13 +134,11 @@ void Queue<TYPE>::untilSize( unsigned int s )
 //    true if it is already locked by someone else,
 //    false if locked successfully or already locked by self.
 template<typename TYPE>
-bool Queue<TYPE>::lock()
+void Queue<TYPE>::lock()
 {
   m.lock();
 
   id = std::this_thread::get_id();
-
-  return false;
 }
 
 // unlockes the queue if this thread owns it.
@@ -152,6 +148,9 @@ bool Queue<TYPE>::lock()
 template<typename TYPE>
 bool Queue<TYPE>::unlock()
 {
+  if ( ! m.try_lock() )
+    return false;
+
   if ( id != std::this_thread::get_id() )
     return true;
 
