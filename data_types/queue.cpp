@@ -31,6 +31,7 @@ private:
   std::queue<TYPE> q; // the queue.
   std::condition_variable cv; // notified on queue modification.
   std::mutex m; // modification to queue contents.
+  std::thread::id id; // keeps track of who locks the persistant lock.
 };
 
 template<typename TYPE>
