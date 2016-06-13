@@ -1,7 +1,8 @@
 #include <map>
 #include <string>
+#include "../defaults.hpp"
 
-#define COORDS_TYPE int
+#define COORDS_TYPE long long
 #define SIDE_LENGTH_TYPE int
 #define HEIGHT_TYPE int
 
@@ -15,14 +16,14 @@ struct HeightCoord
 class HeightMap
 {
 public:
-  // returns the sum of the heights of side=1 to side=SIZE.
+  // returns the sum of the heights of side=1 to side=HEIGHT_CHUNK_SIZE.
   HEIGHT_TYPE height( COORDS_TYPE x, COORDS_TYPE y );
 
   // generates all required levels to generate x,y,side.
   void generate( COORDS_TYPE x, COORDS_TYPE y );
 
 private:
-  map< COORDS_TYPE, pair< HEIGHT_TYPE, map< COORDS_TYPE, pair< HEIGHT_TYPE, map< COORDS_TYPE, HEIGHT_TYPE >>>>> data;
+  std::map< COORDS_TYPE, std::pair< HEIGHT_TYPE, std::map< COORDS_TYPE, std::pair< HEIGHT_TYPE, std::map< COORDS_TYPE, HEIGHT_TYPE >>>>> data;
 
   // returns the Coords of x,y,side in data. always use this to get the position of any element!
   HeightCoord at( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side );
@@ -84,13 +85,13 @@ HEIGHT_TYPE& HeightMap::get( HeightCoord p )
       if ( data[p.x].second[p.y].second.find(p.side) != data[p.x].second[p.y].second.end() )
         return data[p.x].second[p.y].second[p.side];
       else
-        throw "HeightMap::get position " + to_string(p.x) + "," + to_string(p.y) + " not generated";
+        throw "HeightMap::get position " + std::to_string(p.x) + "," + std::to_string(p.y) + " not generated";
     }
     else
-      throw "HeightMap::get position " + to_string(p.x) + "," + to_string(p.y) + " not generated";
+      throw "HeightMap::get position " + std::to_string(p.x) + "," + std::to_string(p.y) + " not generated";
   }
   else
-    throw "HeightMap::get position " + to_string(p.x) + "," + to_string(p.y) + " not generated";
+    throw "HeightMap::get position " + std::to_string(p.x) + "," + std::to_string(p.y) + " not generated";
 }
 
 HEIGHT_TYPE& HeightMap::get( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side )
@@ -110,7 +111,7 @@ void HeightMap::set( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side, HEIGHT
 
 void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
 {
-  SIDE_LENGTH_TYPE side = SIZE;
+  SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
 
   while ( side >= 1 )
   {
@@ -120,9 +121,9 @@ void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
     {
       get( p );
     }
-    catch ( string error )
+    catch ( std::string error )
     {
-      set( p, rand() % HEIGHT_TYPE_RANGE - ( HEIGHT_TYPE_RANGE / 2 ) );
+      set( p, rand() % HEIGHT_RANGE - ( HEIGHT_RANGE / 2 ) );
     }
 
     side /= 2;
@@ -131,7 +132,7 @@ void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
 
 HEIGHT_TYPE HeightMap::height( COORDS_TYPE x, COORDS_TYPE y )
 {
-  SIDE_LENGTH_TYPE side = SIZE;
+  SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
   HEIGHT_TYPE r;
 
   while ( side >= 1 )
@@ -140,7 +141,7 @@ HEIGHT_TYPE HeightMap::height( COORDS_TYPE x, COORDS_TYPE y )
     {
       r += get( x, y, side );
     }
-    catch ( string error )
+    catch ( std::string error )
     {
       throw "HeightMap::height::" + error;
     }

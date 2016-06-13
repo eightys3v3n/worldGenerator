@@ -8,9 +8,18 @@
 #define SCREEN_Y 32
 #endif // SCREEN_Y
 
+// height map chunk size
+#ifndef HEIGHT_CHUNK_SIZE
+#define HEIGHT_CHUNK_SIZE 128
+#endif // HEIGHT_CHUNK_SIZE
+
+// 2x the amount an adjacent block can move up or down.
+#ifndef HEIGHT_RANGE
+#define HEIGHT_RANGE 3
+#endif // HEIGHT_RANGE
+
 // the chunk width & height.
-#ifndef CHUNK_SIZE
-#define CHUNK_SIZE
+#ifndef CHUNK_DIAMETER
 #define CHUNK_DIAMETER 18.47520861406802446429
 #define CHUNK_dIAMETER 16
 #define CHUNK_SIDE 9.238
