@@ -6,6 +6,7 @@
 #include <SFML/System.hpp>
 #include "defaults.hpp"
 #include "data_types/chunk.cpp"
+#include "data_types/heightMap.hpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
@@ -24,8 +25,9 @@ public:
   sf::CircleShape& shape( long long x, long long y );
   sf::CircleShape& shape( vector2ll pos );
 
-//private:
-  std::map< long long, std::map< long long, Chunk > > data;
+private:
+  std::map< long long, std::map< long long, Chunk > > chunkData;
+  heightMap heightData;
 };
 
 std::vector< Chunk* > surroundingChunks( World* world, long long x, long long y );
