@@ -1,89 +1,88 @@
 #include <map>
 #include <string>
+#include <SFML/System.hpp>
 #include "../defaults.hpp"
 
-#define COORDS_TYPE long long
+typedef sf::Vector2<long long> vector2ll;
+
 #define SIDE_LENGTH_TYPE int
 #define HEIGHT_TYPE int
 
 struct HeightCoord
 {
-  COORDS_TYPE x = 0;
-  COORDS_TYPE y = 0;
-  SIDE_LENGTH_TYPE side = 0;
-};
+  vector2ll p;
+  SIDE_LENGTH_TYPE side;
+}
 
 class HeightMap
 {
 public:
   // returns the sum of the heights of side=1 to side=HEIGHT_CHUNK_SIZE.
-  HEIGHT_TYPE height( COORDS_TYPE x, COORDS_TYPE y );
+  HEIGHT_TYPE height( vector2ll p );
 
   // generates all required levels to generate x,y,side.
-  void generate( COORDS_TYPE x, COORDS_TYPE y );
+  void generate( vector2ll p );
 
 private:
-  std::map< COORDS_TYPE, std::pair< HEIGHT_TYPE, std::map< COORDS_TYPE, std::pair< HEIGHT_TYPE, std::map< COORDS_TYPE, HEIGHT_TYPE >>>>> data;
+  std::map< vector2ll, std::pair< HEIGHT_TYPE, std::map< COORDS_TYPE, HEIGHT_TYPE >>> data;
 
   // returns the Coords of x,y,side in data. always use this to get the position of any element!
-  HeightCoord at( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side );
+  HeightCoord at( vector2ll p, SIDE_LENGTH_TYPE side );
 
   // returns the height of x,y,side.
-  HEIGHT_TYPE& get( HeightCoord p );
-  HEIGHT_TYPE& get( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side );
+  HEIGHT_TYPE& get( vector2ll p, SIDE_LENGTH_TYPE side );
 
   // sets the height value for the side length of x and y.
-  void set( HeightCoord p, HEIGHT_TYPE value );
-  void set( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value );
+  void set( vector2ll p, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value );
 };
 
-HeightCoord HeightMap::at( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side )
+HeightCoord HeightMap::at( vector2ll p, SIDE_LENGTH_TYPE side )
 {
-  if ( x >= 0 && y >= 0 )
+  if ( p.x >= 0 && p.y >= 0 )
   {
-    x = side * (COORDS_TYPE)( x / side );
-    y = side * (COORDS_TYPE)( y / side );
+    p.x = side * (COORDS_TYPE)( p.x / side );
+    p.y = side * (COORDS_TYPE)( p.y / side );
 
-    return {x,y,side};
+    return {p.x,p.y,side};
   }
-  else if ( x < 0 && y >= 0 )
+  else if ( p.x < 0 && p.y >= 0 )
   {
-    x = side * (COORDS_TYPE)( (x+1) / side );
-    y = side * (COORDS_TYPE)( y / side );
-    x -= side;
+    p.x = side * (COORDS_TYPE)( (p.x+1) / side );
+    p.y = side * (COORDS_TYPE)( p.y / side );
+    p.x -= side;
 
-    return {x,y,side};
+    return {p.x,p.y,side};
   }
-  else if ( x >= 0 && y < 0 )
+  else if ( p.x >= 0 && p.y < 0 )
   {
-    x = side * (COORDS_TYPE)( x / side );
-    y = side * (COORDS_TYPE)( (y+1) / side );
-    y -= side;
+    p.x = side * (COORDS_TYPE)( p.x / side );
+    p.y = side * (COORDS_TYPE)( (p.y+1) / side );
+    p.y -= side;
 
-    return {x,y,side};
+    return {p.x,p.y,side};
   }
-  else if ( x < 0 && y < 0 )
+  else if ( p.x < 0 && p.y < 0 )
   {
-    x = side * (COORDS_TYPE)( (x+1) / side );
-    y = side * (COORDS_TYPE)( (y+1) / side );
-    x -= side;
-    y -= side;
+    p.x = side * (COORDS_TYPE)( (p.x+1) / side );
+    p.y = side * (COORDS_TYPE)( (p.y+1) / side );
+    p.x -= side;
+    p.y -= side;
 
-    return {x,y,side};
+    return {p.x,p.y,side};
   }
 
   // just to block warning. this should NEVER happen.
   return {0,0,0};
 }
 
-HEIGHT_TYPE& HeightMap::get( HeightCoord p )
+HEIGHT_TYPE& HeightMap::get( vector2ll p, SIDE_LENGTH_TYPE side )
 {
   if ( data.find(p.x) != data.end() )
   {
     if ( data[p.x].second.find(p.y) != data[p.x].second.end() )
     {
-      if ( data[p.x].second[p.y].second.find(p.side) != data[p.x].second[p.y].second.end() )
-        return data[p.x].second[p.y].second[p.side];
+      if ( data[p.x].second[p.y].second.find(side) != data[p.x].second[p.y].second.end() )
+        return data[p.x].second[p.y].second[side];
       else
         throw "HeightMap::get position " + std::to_string(p.x) + "," + std::to_string(p.y) + " not generated";
     }
@@ -94,22 +93,12 @@ HEIGHT_TYPE& HeightMap::get( HeightCoord p )
     throw "HeightMap::get position " + std::to_string(p.x) + "," + std::to_string(p.y) + " not generated";
 }
 
-HEIGHT_TYPE& HeightMap::get( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side )
+void HeightMap::set( vector2ll p, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value )
 {
-  return get( at( x, y, side ) );
+  data[p.x].second[p.y].second[side] = value;
 }
 
-void HeightMap::set( HeightCoord p, HEIGHT_TYPE value )
-{
-  data[p.x].second[p.y].second[p.side] = value;
-}
-
-void HeightMap::set( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value )
-{
-  set( at( x, y, side ), value );
-}
-
-void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
+void HeightMap::generate( vector2ll p )
 {
   SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
 
@@ -130,7 +119,7 @@ void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
   }
 }
 
-HEIGHT_TYPE HeightMap::height( COORDS_TYPE x, COORDS_TYPE y )
+HEIGHT_TYPE HeightMap::height( vector2ll p )
 {
   SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
   HEIGHT_TYPE r;

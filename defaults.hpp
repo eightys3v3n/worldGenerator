@@ -8,6 +8,11 @@
 #define SCREEN_Y 32
 #endif // SCREEN_Y
 
+// the type of variable to store coordinates
+#ifndef COORDS_TYPE
+#define COORDS_TYPE long long
+#endif // COORDS_TYPE
+
 // height map chunk size
 #ifndef HEIGHT_CHUNK_SIZE
 #define HEIGHT_CHUNK_SIZE 128

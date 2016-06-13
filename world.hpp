@@ -21,6 +21,8 @@ public:
   void set( vector2ll pos, int t );
   Chunk* get( long long x, long long y );
   Chunk* get( vector2ll pos );
+  HEIGHT_TYPE getHeight( vector2ll pos );
+  HEIGHT_TYPE getHeight( long long x, long long y );
 
   sf::CircleShape& shape( long long x, long long y );
   sf::CircleShape& shape( vector2ll pos );

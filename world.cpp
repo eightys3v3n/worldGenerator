@@ -2,6 +2,7 @@
 #include <map>
 #include "defaults.hpp"
 #include "world.hpp"
+#include "data_types/heightMaps.hpp"
 
 void World::init( long long x, long long y )
 {
@@ -48,6 +49,16 @@ Chunk* World::get( long long x, long long y )
 Chunk* World::get( vector2ll pos )
 {
   return get( pos.x, pos.y );
+}
+
+HEIGHT_TYPE World::getHeight( long long x, long long y )
+{
+  return heightData.height( x, y );
+}
+
+HEIGHT_TYPE World::getHeight( vector2ll pos )
+{
+  return heightData.height( pos.x, pos.y );
 }
 
 sf::CircleShape& World::shape( long long x, long long y )
