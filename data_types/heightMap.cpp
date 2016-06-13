@@ -1,71 +1,70 @@
-#include <iostream>
 #include <map>
-#include <cmath>
-using namespace std;
+#include <string>
 
-#define SIZE 8
-#define HEIGHT_RANGE 3
+#define COORDS_TYPE int
+#define SIDE_LENGTH_TYPE int
+#define HEIGHT_TYPE int
 
 struct HeightCoord
 {
-  int x = 0;
-  int y = 0;
-  int side = 0;
+  COORDS_TYPE x = 0;
+  COORDS_TYPE y = 0;
+  SIDE_LENGTH_TYPE side = 0;
 };
 
 class HeightMap
 {
 public:
   // returns the sum of the heights of side=1 to side=SIZE.
-  int height( int x, int y );
+  HEIGHT_TYPE height( COORDS_TYPE x, COORDS_TYPE y );
 
   // generates all required levels to generate x,y,side.
-  void generate( int x, int y );
+  void generate( COORDS_TYPE x, COORDS_TYPE y );
 
 private:
-  map< int, pair< int, map< int, pair< int, map< int, int >>>>> data;
+  map< COORDS_TYPE, pair< HEIGHT_TYPE, map< COORDS_TYPE, pair< HEIGHT_TYPE, map< COORDS_TYPE, HEIGHT_TYPE >>>>> data;
 
   // returns the Coords of x,y,side in data. always use this to get the position of any element!
-  HeightCoord at( int x, int y, int side );
+  HeightCoord at( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side );
 
   // returns the height of x,y,side.
-  int& get( HeightCoord p );
-  int& get( int x, int y, int side );
+  HEIGHT_TYPE& get( HeightCoord p );
+  HEIGHT_TYPE& get( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side );
 
   // sets the height value for the side length of x and y.
-  void set( HeightCoord p, int value );
-  void set( int x, int y, int side, int value );
+  void set( HeightCoord p, HEIGHT_TYPE value );
+  void set( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value );
 };
 
-HeightCoord HeightMap::at( int x, int y, int side )
+HeightCoord HeightMap::at( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side )
 {
   if ( x >= 0 && y >= 0 )
   {
-    x = side * (int)( x / side );
-    y = side * (int)( y / side );
+    x = side * (COORDS_TYPE)( x / side );
+    y = side * (COORDS_TYPE)( y / side );
 
     return {x,y,side};
   }
   else if ( x < 0 && y >= 0 )
   {
-    x = side * (int)( (x+1) / side );
-    y = side * (int)( y / side );
+    x = side * (COORDS_TYPE)( (x+1) / side );
+    y = side * (COORDS_TYPE)( y / side );
     x -= side;
 
     return {x,y,side};
   }
   else if ( x >= 0 && y < 0 )
   {
-    x = side * (int)( x / side );
-    y = side * (int)( (y+1) / side );
+    x = side * (COORDS_TYPE)( x / side );
+    y = side * (COORDS_TYPE)( (y+1) / side );
     y -= side;
 
     return {x,y,side};
   }
   else if ( x < 0 && y < 0 )
   {
-    x = side * (int)( (x+1) / side );
-    y = side * (int)( (y+1) / side );
+    x = side * (COORDS_TYPE)( (x+1) / side );
+    y = side * (COORDS_TYPE)( (y+1) / side );
     x -= side;
     y -= side;
 
@@ -76,7 +75,7 @@ HeightCoord HeightMap::at( int x, int y, int side )
   return {0,0,0};
 }
 
-int& HeightMap::get( HeightCoord p )
+HEIGHT_TYPE& HeightMap::get( HeightCoord p )
 {
   if ( data.find(p.x) != data.end() )
   {
@@ -94,24 +93,24 @@ int& HeightMap::get( HeightCoord p )
     throw "HeightMap::get position " + to_string(p.x) + "," + to_string(p.y) + " not generated";
 }
 
-int& HeightMap::get( int x, int y, int side )
+HEIGHT_TYPE& HeightMap::get( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side )
 {
   return get( at( x, y, side ) );
 }
 
-void HeightMap::set( HeightCoord p, int value )
+void HeightMap::set( HeightCoord p, HEIGHT_TYPE value )
 {
   data[p.x].second[p.y].second[p.side] = value;
 }
 
-void HeightMap::set( int x, int y, int side, int value )
+void HeightMap::set( COORDS_TYPE x, COORDS_TYPE y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value )
 {
   set( at( x, y, side ), value );
 }
 
-void HeightMap::generate( int x, int y )
+void HeightMap::generate( COORDS_TYPE x, COORDS_TYPE y )
 {
-  int side = SIZE;
+  SIDE_LENGTH_TYPE side = SIZE;
 
   while ( side >= 1 )
   {
@@ -123,18 +122,17 @@ void HeightMap::generate( int x, int y )
     }
     catch ( string error )
     {
-      set( p, rand() % HEIGHT_RANGE - ( HEIGHT_RANGE / 2 ) );
-      cout << " generating " << p.x << "," << p.y << "," << p.side << endl;
+      set( p, rand() % HEIGHT_TYPE_RANGE - ( HEIGHT_TYPE_RANGE / 2 ) );
     }
 
     side /= 2;
   }
 }
 
-int HeightMap::height( int x, int y )
+HEIGHT_TYPE HeightMap::height( COORDS_TYPE x, COORDS_TYPE y )
 {
-  int side = SIZE;
-  int r;
+  SIDE_LENGTH_TYPE side = SIZE;
+  HEIGHT_TYPE r;
 
   while ( side >= 1 )
   {
@@ -149,44 +147,4 @@ int HeightMap::height( int x, int y )
 
     side /= 2;
   }
-}
-
-int main()
-{
-  HeightMap data;
-
-  int x, y;
-  string buf;
-
-  srand(175692);
-
-  while ( x != 1337 && y != 1337 )
-  {
-    cin >> buf;
-
-    try
-    {
-      x = stoi( buf.substr( 0, buf.find(',') ) );
-      y = stoi( buf.substr( buf.find(',') + 1 ) );
-    }
-    catch (...)
-    {
-      cout << "both coordinates need to be integers" << endl;
-      continue;
-    }
-
-    try
-    {
-      data.height( x, y );
-      cout << "already generated" << endl;
-    }
-    catch ( string error )
-    {
-      cout << error << endl;
-
-      data.generate( x, y );
-    }
-  }
-
-  return false;
 }
