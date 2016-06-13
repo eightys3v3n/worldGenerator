@@ -10,6 +10,7 @@
 #include "generator.hpp"
 #include "data_types/entity.hpp"
 #include "data_types/queue.hpp"
+#include "data_types/heightMap.hpp"
 using namespace std;
 using namespace sf;
 

@@ -22,15 +22,16 @@ public:
   // generates all required levels to generate x,y,side.
   void generate( int x, int y );
 
+  // returns the height of x,y,side.
+  int& get( HeightCoord p );
+  int& get( int x, int y, int side );
+
 private:
   map< int, pair< int, map< int, pair< int, map< int, int >>>>> data;
 
   // returns the Coords of x,y,side in data. always use this to get the position of any element!
   HeightCoord at( int x, int y, int side );
 
-  // returns the height of x,y,side.
-  int& get( HeightCoord p );
-  int& get( int x, int y, int side );
 
   // sets the height value for the side length of x and y.
   void set( HeightCoord p, int value );
@@ -124,7 +125,7 @@ void HeightMap::generate( int x, int y )
     catch ( string error )
     {
       set( p, rand() % HEIGHT_RANGE - ( HEIGHT_RANGE / 2 ) );
-      cout << " generating " << p.x << "," << p.y << "," << p.side << endl;
+      cout << "+ generating " << p.x << "," << p.y << "," << p.side << endl;
     }
 
     side /= 2;
@@ -178,7 +179,15 @@ int main()
     try
     {
       data.height( x, y );
-      cout << "already generated" << endl;
+
+      cout << "height of the " << x << "," << y << " stack." << endl;
+
+      for ( int s = 1; s <= SIZE; s *= 2 )
+      {
+        cout << "  " << data.get( x, y, s ) << endl;
+      }
+
+      cout << " total height " << data.height( x,y ) << endl;
     }
     catch ( string error )
     {
