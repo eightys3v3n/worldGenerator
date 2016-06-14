@@ -9,11 +9,14 @@
 
 typedef sf::Vector2<long long> vector2ll;
 
+void generateHeight( World* world, vector2ll& pos );
+void generateChunk( World* world, vector2ll& pos );
+
 // running is true; false when the thread should exit.
 // status is true while the thread is doing computation and false when the thread is waiting.
 // cv is used to signal the generation algorithm thread that this a chunk has completed.
-void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ );
+void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ );
 std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player );
-void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks );
+void generationServer( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks );
 
 #endif // GENERATOR_

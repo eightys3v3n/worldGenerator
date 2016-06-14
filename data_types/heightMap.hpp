@@ -22,8 +22,10 @@ public:
   // returns the sum of the heights of side=1 to side=HEIGHT_CHUNK_SIZE.
   HEIGHT_TYPE height( long long x, long long y );
 
-  // generates all required levels to generate x,y,side.
-  void generate( long long x, long long y );
+  HEIGHT_TYPE& get( long long x, long long y, SIDE_LENGTH_TYPE side );
+  void set( long long x, long long y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value );
+
+  bool generated( long long x, long long y );
 
 private:
   std::map< HeightCoord, HEIGHT_TYPE > data;

@@ -23,7 +23,6 @@ public:
 
   sf::CircleShape& shape( long long x, long long y );
 
-private:
   std::map< long long, std::map< long long, Chunk > > chunkData;
   HeightMap heightData;
 };

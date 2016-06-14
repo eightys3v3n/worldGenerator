@@ -60,25 +60,16 @@ void HeightMap::set( HeightCoord p, HEIGHT_TYPE value )
   data[p] = value;
 }
 
-void HeightMap::generate( long long x, long long y )
+HEIGHT_TYPE& HeightMap::get( long long x, long long y, SIDE_LENGTH_TYPE side )
 {
-  SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
+  HeightCoord r = at( x, y, side );
+  return get( r );
+}
 
-  while ( side >= 1 )
-  {
-    HeightCoord p = at( x, y, side );
-
-    try
-    {
-      get( p );
-    }
-    catch ( std::string error )
-    {
-      set( p, rand() % HEIGHT_RANGE - ( HEIGHT_RANGE / 2 ) );
-    }
-
-    side /= 2;
-  }
+void HeightMap::set( long long x, long long y, SIDE_LENGTH_TYPE side, HEIGHT_TYPE value )
+{
+  HeightCoord r = at( x, y, side );
+  set( r, value );
 }
 
 HEIGHT_TYPE HeightMap::height( long long x, long long y )
@@ -104,4 +95,14 @@ HEIGHT_TYPE HeightMap::height( long long x, long long y )
   }
 
   return r;
+}
+
+bool HeightMap::generated( long long x, long long y )
+{
+  HeightCoord r{ x, y, 1 };
+
+  if ( data.find(r) == data.end() )
+    return false;
+
+  return true;
 }

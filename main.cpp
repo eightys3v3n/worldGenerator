@@ -59,7 +59,7 @@ int main( int argc, char** argv )
 
     // generate function name MUST have '::' in front because of the 'using namespace' statements.
     // read from chunksToGen and actually generate chunks.
-    thread chunkAlgoT( ::generate, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
+    thread chunkAlgoT( ::generationServer, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
 
   window.setFramerateLimit(31);
 
@@ -69,7 +69,7 @@ int main( int argc, char** argv )
   player.y = 0;
 
   for ( unsigned int t = 0; t < THREADS; t++ )
-    chunkGenT.push_back( thread( generateChunk, &running, &world, &chunksToGen, &generatedChunks ) );
+    chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks ) );
 
   // starts a loop as long as running == true.
   while ( running )

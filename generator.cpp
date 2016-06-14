@@ -9,6 +9,7 @@
 #include "world.hpp"
 #include "data_types/queue.hpp"
 #include "data_types/entity.hpp"
+#include "data_types/heightMap.hpp"
 
 typedef sf::Vector2<unsigned int> vector2ui;
 typedef sf::Vector2<long long> vector2ll;
@@ -16,13 +17,61 @@ typedef sf::Vector2<double> vector2d;
 
 extern std::mutex stdoutM;
 
-void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ )
+void generateHeight( World* world, vector2ll& pos )
 {
-  int type = 0;
-  int r;
-  vector2d land, water;
-  vector2ll pos;
+  SIDE_LENGTH_TYPE side = HEIGHT_CHUNK_SIZE;
+
+  while ( side >= 1 )
+  {
+    try
+    {
+      world->heightData.get( pos.x, pos.y, side );
+    }
+    catch ( std::string error )
+    {
+      world->heightData.set( pos.x, pos.y, side, rand() % HEIGHT_RANGE - ( HEIGHT_RANGE / 2 ) );
+    }
+
+    side /= 2;
+  }
+}
+
+void generateChunk( World* world, vector2ll& pos )
+{
+  int r, type;
+  vector2d land = LAND_PROB;
+  vector2d water = WATER_PROB;
   std::vector< Chunk* > chunks;
+
+  chunks = surroundingChunks( world, pos.x, pos.y );
+
+  for ( unsigned int c = 0; c < chunks.size(); c++ )
+  {
+    if ( chunks[c]->type == LAND )
+    {
+      land.y += LAND_GROUPING;
+      water.x += LAND_GROUPING;
+    }
+    else if ( chunks[c]->type == WATER )
+    {
+      land.y -= WATER_GROUPING;
+      water.y -= WATER_GROUPING;
+    }
+  }
+
+  r = rand() % 100;
+
+  if ( r >= land.x && r <= land.y )
+    type = LAND;
+  else if ( r >= water.x && r <= water.y )
+    type = WATER;
+
+  world->set( pos.x, pos.y, type );
+}
+
+void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ )
+{
+  vector2ll pos;
 
   while ( *running )
   {
@@ -31,35 +80,17 @@ void generateChunk( bool* running, World* world, Queue<vector2ll>* queue, Queue<
     if ( ! *running )
       break;
 
-    chunks = surroundingChunks( world, pos.x, pos.y );
+    /*if ( world->get( pos.x, pos.y ) != 0 )
+      std::cout << "regenerating chunk " << pos.x << "," << pos.y << std::endl;
 
-    land = LAND_PROB;
-    water = WATER_PROB;
+    if ( world->heightData.generated( pos.x, pos.y ) )
+      std::cout << "regenerating height " << pos.x << "," << pos.y << std::endl;*/
 
-    for ( unsigned int c = 0; c < chunks.size(); c++ )
-    {
-      if ( chunks[c]->type == LAND )
-      {
-        land.y += LAND_GROUPING;
-        water.x += LAND_GROUPING;
-      }
-      else if ( chunks[c]->type == WATER )
-      {
-        land.y -= WATER_GROUPING;
-        water.y -= WATER_GROUPING;
-      }
-    }
-
-    r = rand() % 100;
-
-    if ( r >= land.x && r <= land.y )
-      type = LAND;
-    else if ( r >= water.x && r <= water.y )
-      type = WATER;
+    generateChunk( world, pos );
+    generateHeight( world, pos );
 
     std::this_thread::sleep_for( std::chrono::milliseconds( GENERATION_DELAY ) );
 
-    world->set( pos.x, pos.y, type );
     finQ->push(pos);
   }
 }
@@ -148,7 +179,7 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   return s;
 }
 
-void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks )
+void generationServer( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks )
 {
   //std::mutex m; // for use with 'notify when to generate'
   std::mutex ch;
@@ -175,7 +206,6 @@ void generate( bool* running, World* world, Entity* player, Queue<vector2ll>* ch
       a[0].pop();
     }
 
-    //std::cerr << "waiting for " << queued << " chunks." << std::endl;
     finChunks->untilSize( queued );
     finChunks->clear();
 
