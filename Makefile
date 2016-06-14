@@ -5,7 +5,7 @@ full=$(gcc) $(args)
 
 all: main
 
-main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o tmp/entity.type.o
+main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o tmp/entity.type.o tmp/heightMap.type.o
 	$(full) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lpthread -g tmp/* -o main
 
 tmp/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
@@ -28,6 +28,9 @@ tmp/input.o: input.cpp input.hpp data_types/entity.hpp world.hpp
 
 tmp/entity.type.o: data_types/entity.cpp data_types/entity.hpp
 	$(part) data_types/entity.cpp -o tmp/entity.type.o
+
+tmp/heightMap.type.o: data_types/heightMap.cpp data_types/heightMap.hpp
+	$(part) data_types/heightMap.cpp -o tmp/heightMap.type.o
 
 clean:
 	rm tmp/*
