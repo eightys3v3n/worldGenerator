@@ -21,7 +21,7 @@ public:
   Chunk* get( long long x, long long y );
   HEIGHT_TYPE getHeight( long long x, long long y );
 
-  sf::CircleShape& shape( long long x, long long y );
+  sf::RectangleShape& shape( long long x, long long y );
 
   std::map< long long, std::map< long long, Chunk > > chunkData;
   HeightMap heightData;

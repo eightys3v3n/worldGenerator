@@ -9,7 +9,7 @@ class Entity
 public:
   Entity();
 
-  sf::CircleShape shape;
+  sf::RectangleShape shape;
   long long x = 0;
   long long y = 0;
 };

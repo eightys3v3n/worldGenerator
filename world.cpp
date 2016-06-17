@@ -46,7 +46,7 @@ HEIGHT_TYPE World::getHeight( long long x, long long y )
   return heightData.height(x,y);
 }
 
-sf::CircleShape& World::shape( long long x, long long y )
+sf::RectangleShape& World::shape( long long x, long long y )
 {
   return chunkData[x][y].shape;
 }

@@ -103,9 +103,9 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
 
   for ( unsigned int r = 0; r <= VIEW_DISTANCE; r++ )
   {
-    if ( r == 0 )
+    if ( ! r )
     {
-      if ( world->get(x,y)->type == 0 )
+      if ( ! world->get(x,y)->type )
       {
         s.resize( s.size() + 1 );
         s[ s.size() - 1].push( vector2ll{x,y} );
@@ -117,30 +117,30 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
     {
       s.resize( s.size() + 1 );
 
-      if ( l == 0 )
+      if ( ! l )
       {
-        if ( world->get(x-r, y)->type == 0 )
+        if ( ! world->get(x-r, y)->type )
           s[ s.size() - 1 ].push( vector2ll{x-r, y} );
 
-        if ( world->get(x+r, y)->type == 0 )
+        if ( ! world->get(x+r, y)->type )
           s[ s.size() - 1 ].push( vector2ll{x+r, y} );
       }
       else
       {
-        if ( world->get(x+r, y-l)->type == 0 )
+        if ( ! world->get(x+r, y-l)->type )
           s[ s.size() - 1 ].push( vector2ll{x+r, y-l} );
 
-        if ( world->get(x-r, y-l)->type == 0 )
+        if ( ! world->get(x-r, y-l)->type )
           s[ s.size() - 1 ].push( vector2ll{x-r, y-l} );
 
-        if ( world->get(x+r, y+l)->type == 0 )
+        if ( ! world->get(x+r, y+l)->type )
           s[ s.size() - 1 ].push( vector2ll{x+r, y+l} );
 
-        if ( world->get(x-r, y+l)->type == 0 )
+        if ( ! world->get(x-r, y+l)->type )
           s[ s.size() - 1 ].push( vector2ll{x-r, y+l} );
       }
 
-      if ( s[ s.size() - 1 ].size() == 0 )
+      if ( ! s[ s.size() - 1 ].size() )
         s.resize( s.size() - 1 );
     }
 
@@ -148,30 +148,30 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
     {
       s.resize( s.size() + 1 );
 
-      if ( l == 0 )
+      if ( ! l )
       {
-        if ( world->get(x, y-r)->type == 0 )
+        if ( ! world->get(x, y-r)->type )
           s[ s.size() - 1 ].push( vector2ll{x, y-r} );
 
-        if ( world->get(x, y+r)->type == 0 )
+        if ( ! world->get(x, y+r)->type )
           s[ s.size() - 1 ].push( vector2ll{x, y+r} );
       }
       else
       {
-        if ( world->get(x-l, y+r)->type == 0 )
+        if ( ! world->get(x-l, y+r)->type )
           s[ s.size() - 1 ].push( vector2ll{x-l, y+r} );
 
-        if ( world->get(x-l, y-r)->type == 0 )
+        if ( ! world->get(x-l, y-r)->type )
           s[ s.size() - 1 ].push( vector2ll{x-l, y-r} );
 
-        if ( world->get(x+l, y+r)->type == 0 )
+        if ( ! world->get(x+l, y+r)->type )
           s[ s.size() - 1 ].push( vector2ll{x+l, y+r} );
 
-        if ( world->get(x+l, y-r)->type == 0 )
+        if ( ! world->get(x+l, y-r)->type )
           s[ s.size() - 1 ].push( vector2ll{x+l, y-r} );
       }
 
-      if ( s[ s.size() - 1 ].size() == 0 )
+      if ( ! s[ s.size() - 1 ].size() )
         s.resize( s.size() - 1 );
     }
   }

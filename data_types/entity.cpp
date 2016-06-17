@@ -4,8 +4,7 @@
 
 Entity::Entity()
 {
-  shape = sf::CircleShape( CHUNK_DIAMETER / 2, 6 );
-  shape.setRotation(30);
+  shape.setSize( sf::Vector2f{ CHUNK_SIZE, CHUNK_SIZE } );
   shape.setPosition(0,0);
-  shape.setOrigin( CHUNK_DIAMETER / 2, CHUNK_dIAMETER / 2);
+    shape.setOrigin( CHUNK_SIZE / 2, CHUNK_SIZE / 2);
 }

@@ -29,7 +29,7 @@ int main( int argc, char** argv )
     srand( 1337 );
 
   // variable declarations
-    RenderWindow window( VideoMode( CHUNK_DIAMETER * .75 * SCREEN_X + CHUNK_dIAMETER / 2, CHUNK_dIAMETER * SCREEN_Y ), "game", Style::Close );
+    RenderWindow window( VideoMode( CHUNK_SIZE * SCREEN_X, CHUNK_SIZE * SCREEN_Y ), "game", Style::Close );
 
     World world;
     Entity player;
@@ -68,10 +68,9 @@ int main( int argc, char** argv )
   player.y = 0;
 
   RectangleShape debug;
-  debug.setSize( Vector2f{ CHUNK_DIAMETER, CHUNK_dIAMETER } );
+  debug.setSize( Vector2f{ CHUNK_SIZE, CHUNK_SIZE } );
   debug.setPosition(0,0);
-    debug.setOrigin( CHUNK_DIAMETER / 2, CHUNK_dIAMETER / 2 );
-  debug.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
+    debug.setOrigin( CHUNK_SIZE / 2, CHUNK_SIZE / 2 );
   debug.setFillColor( Color( 255, 0, 0, 125 ) );
 
   for ( unsigned int t = 0; t < THREADS; t++ )

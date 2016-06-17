@@ -5,7 +5,7 @@
 #define SCREEN_X 32
 #endif // SCREEN_X
 #ifndef SCREEN_Y
-#define SCREEN_Y 32
+#define SCREEN_Y 28
 #endif // SCREEN_Y
 
 // height map chunk size
@@ -18,12 +18,10 @@
 #define HEIGHT_RANGE 3
 #endif // HEIGHT_RANGE
 
-// the chunk width & height. (hexagonal)
-#ifndef CHUNK_DIAMETER
-#define CHUNK_DIAMETER 18.47520861406802446429 // width - point to point
-#define CHUNK_dIAMETER 16 // height - side to side
-#define CHUNK_SIDE 9.238 // length of one side
-#endif // CHUNK_SIZE_D
+// the chunk width & height
+#ifndef CHUNK_SIZE
+#define CHUNK_SIZE 16
+#endif // CHUNK_SIZE
 
 // how many chunks away should be generated
 #ifndef VIEW_DISTANCE
