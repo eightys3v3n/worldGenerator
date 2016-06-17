@@ -8,6 +8,6 @@
 #include "data_types/queue.hpp"
 
 void drawWorld( sf::RenderWindow& window, World& world, Entity& player );
-void draw( sf::RenderWindow* window, World* world, Entity* player );
+void draw( sf::RenderWindow* window, World* world, Entity* player, sf::RectangleShape* debug );
 
 #endif // WINDOW_

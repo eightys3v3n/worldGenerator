@@ -62,11 +62,17 @@ int main( int argc, char** argv )
     thread chunkAlgoT( ::generationServer, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
 
   window.setFramerateLimit(31);
-
-  player.shape.setPosition( CHUNK_DIAMETER * .75 * SCREEN_X / 2, CHUNK_dIAMETER * SCREEN_Y / 2 );
+  player.shape.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
   player.shape.setFillColor( Color::Black );
   player.x = 0;
   player.y = 0;
+
+  RectangleShape debug;
+  debug.setSize( Vector2f{ CHUNK_DIAMETER, CHUNK_dIAMETER } );
+  debug.setPosition(0,0);
+    debug.setOrigin( CHUNK_DIAMETER / 2, CHUNK_dIAMETER / 2 );
+  debug.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
+  debug.setFillColor( Color( 255, 0, 0, 125 ) );
 
   for ( unsigned int t = 0; t < THREADS; t++ )
     chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks ) );
@@ -78,7 +84,7 @@ int main( int argc, char** argv )
     //cerr << generatedChunks.size() << " chunks generated." << endl;
 
     input( &window, &running, &world, &player );
-    draw( &window, &world, &player );
+    draw( &window, &world, &player, &debug );
   }
 
   // begin exit sequence

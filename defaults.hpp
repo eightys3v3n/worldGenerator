@@ -18,11 +18,11 @@
 #define HEIGHT_RANGE 3
 #endif // HEIGHT_RANGE
 
-// the chunk width & height.
+// the chunk width & height. (hexagonal)
 #ifndef CHUNK_DIAMETER
-#define CHUNK_DIAMETER 18.47520861406802446429
-#define CHUNK_dIAMETER 16
-#define CHUNK_SIDE 9.238
+#define CHUNK_DIAMETER 18.47520861406802446429 // width - point to point
+#define CHUNK_dIAMETER 16 // height - side to side
+#define CHUNK_SIDE 9.238 // length of one side
 #endif // CHUNK_SIZE_D
 
 // how many chunks away should be generated
