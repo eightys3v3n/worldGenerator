@@ -34,9 +34,6 @@ int main( int argc, char** argv )
     World world;
     Entity player;
 
-    // create an event embedded in the drawing thread that checks for un-generated chunks?
-    condition_variable generationCV;
-
     // signals when window is available for use of another thread.
     condition_variable windowCV;
 
@@ -51,6 +48,9 @@ int main( int argc, char** argv )
     // chunks are moved from chunksToGen to here once they are finished.
     Queue<vector2ll> generatedChunks;
 
+    // chunks that are being generated
+    Queue<vector2ll> generatingChunks;
+
     // used to pass events from the drawing thread to the input thread.
     Queue<sf::Event> events;
 
@@ -59,7 +59,7 @@ int main( int argc, char** argv )
 
     // generate function name MUST have '::' in front because of the 'using namespace' statements.
     // read from chunksToGen and actually generate chunks.
-    thread chunkAlgoT( ::generationServer, &running, &world, &player, &chunksToGen, &generationCV, &generatedChunks );
+    thread chunkAlgoT( ::generationServer, &running, &world, &player, &chunksToGen, &generatedChunks, &generatingChunks );
 
   window.setFramerateLimit(31);
   player.shape.setPosition( window.getSize().x / 2, window.getSize().y / 2 );
@@ -74,7 +74,7 @@ int main( int argc, char** argv )
   debug.setFillColor( Color( 255, 0, 0, 125 ) );
 
   for ( unsigned int t = 0; t < THREADS; t++ )
-    chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks ) );
+    chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks, &generatingChunks ) );
 
   // starts a loop as long as running == true.
   while ( running )

@@ -69,22 +69,23 @@ void generateChunk( World* world, vector2ll& pos )
   world->set( pos.x, pos.y, type );
 }
 
-void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ )
+void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ, Queue<vector2ll>* generating )
 {
   vector2ll pos;
 
   while ( *running )
   {
+    queue.lock();
+    generating.lock();
+
     pos = queue->first();
+    generating.push( pos );
+
+    queue.unlock();
+    generating.unlock();
 
     if ( ! *running )
       break;
-
-    /*if ( world->get( pos.x, pos.y ) != 0 )
-      std::cout << "regenerating chunk " << pos.x << "," << pos.y << std::endl;
-
-    if ( world->heightData.generated( pos.x, pos.y ) )
-      std::cout << "regenerating height " << pos.x << "," << pos.y << std::endl;*/
 
     generateChunk( world, pos );
     generateHeight( world, pos );
@@ -95,7 +96,7 @@ void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Que
   }
 }
 
-std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
+std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player, Queue<vector2ll>* generating )
 {
   std::deque< Queue< vector2ll > > s;
   long long x = player->x;
@@ -105,7 +106,7 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   {
     if ( ! r )
     {
-      if ( ! world->get(x,y)->type )
+      if ( ! world->get(x,y)->type && ! generating->find( vector2ll{ x, y } ) )
       {
         s.resize( s.size() + 1 );
         s[ s.size() - 1].push( vector2ll{x,y} );
@@ -119,24 +120,24 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
 
       if ( ! l )
       {
-        if ( ! world->get(x-r, y)->type )
+        if ( ! world->get(x-r, y)->type && ! generating->find( vector2ll{x-r, y} ) )
           s[ s.size() - 1 ].push( vector2ll{x-r, y} );
 
-        if ( ! world->get(x+r, y)->type )
+        if ( ! world->get(x+r, y)->type && ! generating->find( vector2ll{x+r, y} ) )
           s[ s.size() - 1 ].push( vector2ll{x+r, y} );
       }
       else
       {
-        if ( ! world->get(x+r, y-l)->type )
+        if ( ! world->get(x+r, y-l)->type && ! generating->find( vector2ll{x+r, y-l} ) )
           s[ s.size() - 1 ].push( vector2ll{x+r, y-l} );
 
-        if ( ! world->get(x-r, y-l)->type )
+        if ( ! world->get(x-r, y-l)->type && ! generating->find( vector2ll{x-r, y-l} ) )
           s[ s.size() - 1 ].push( vector2ll{x-r, y-l} );
 
-        if ( ! world->get(x+r, y+l)->type )
+        if ( ! world->get(x+r, y+l)->type && ! generating->find( vector2ll{x+r, y+l} ) )
           s[ s.size() - 1 ].push( vector2ll{x+r, y+l} );
 
-        if ( ! world->get(x-r, y+l)->type )
+        if ( ! world->get(x-r, y+l)->type && ! generating->find( vector2ll{x-r, y+l} ) )
           s[ s.size() - 1 ].push( vector2ll{x-r, y+l} );
       }
 
@@ -150,24 +151,24 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
 
       if ( ! l )
       {
-        if ( ! world->get(x, y-r)->type )
+        if ( ! world->get(x, y-r)->type && ! generating->find( vector2ll{x, y-r} ) )
           s[ s.size() - 1 ].push( vector2ll{x, y-r} );
 
-        if ( ! world->get(x, y+r)->type )
+        if ( ! world->get(x, y+r)->type && ! generating->find( vector2ll{x, y+r} ) )
           s[ s.size() - 1 ].push( vector2ll{x, y+r} );
       }
       else
       {
-        if ( ! world->get(x-l, y+r)->type )
+        if ( ! world->get(x-l, y+r)->type && ! generating->find( vector2ll{x-l, y+r} ) )
           s[ s.size() - 1 ].push( vector2ll{x-l, y+r} );
 
-        if ( ! world->get(x-l, y-r)->type )
+        if ( ! world->get(x-l, y-r)->type && ! generating->find( vector2ll{x-l, y-r} ) )
           s[ s.size() - 1 ].push( vector2ll{x-l, y-r} );
 
-        if ( ! world->get(x+l, y+r)->type )
+        if ( ! world->get(x+l, y+r)->type && ! generating->find( vector2ll{x+l, y+r} ) )
           s[ s.size() - 1 ].push( vector2ll{x+l, y+r} );
 
-        if ( ! world->get(x+l, y-r)->type )
+        if ( ! world->get(x+l, y-r)->type && ! generating->find( vector2ll{x+l, y-r} ) )
           s[ s.size() - 1 ].push( vector2ll{x+l, y-r} );
       }
 
@@ -179,7 +180,7 @@ std::deque< Queue< vector2ll > > generateSeq( World* world, Entity* player )
   return s;
 }
 
-void generationServer( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, std::condition_variable* in, Queue<vector2ll>* finChunks )
+void generationServer( bool* running, World* world, Entity* player, Queue<vector2ll>* chunks, Queue<vector2ll>* finChunks, Queue<vector2ll>* generating )
 {
   //std::mutex m; // for use with 'notify when to generate'
   std::mutex ch;
@@ -196,7 +197,7 @@ void generationServer( bool* running, World* world, Entity* player, Queue<vector
     std::deque< Queue< vector2ll > > s;
 
     // TODO:currently generates entire sequence but only needs next level.
-    s = generateSeq( world, player );
+    s = generateSeq( world, player, generating );
 
     std::deque< Queue< vector2ll > > a = generateSeq( world, player );
     while ( ! a[0].empty() )
