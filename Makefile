@@ -5,32 +5,32 @@ full=$(gcc) $(args)
 
 all: main
 
-main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o tmp/entity.type.o tmp/heightMap.type.o
-	$(full) -lsfml-graphics -lsfml-window -lsfml-system -lpthread -g tmp/* -o main
+main: build/main build/world.o build/generator.o build/draw.o build/input.o build/entity.type.o build/heightMap.type.o
+	$(full) -lsfml-graphics -lsfml-window -lsfml-system -lpthread -g build/* -o main
 
-tmp/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
-	$(part) main.cpp -o tmp/main
+build/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+	$(part) main.cpp -o build/main
 
-tmp/world.o: world.cpp world.hpp data_types/chunk.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
-	$(part) world.cpp -o tmp/world.o
+build/world.o: world.cpp world.hpp data_types/chunk.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+	$(part) world.cpp -o build/world.o
 
-tmp/generator.o: generator.cpp world.hpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
-	$(part) generator.cpp -o tmp/generator.o
+build/generator.o: generator.cpp world.hpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+	$(part) generator.cpp -o build/generator.o
 
-tmp/window.o: window.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
-	$(part) window.cpp -o tmp/window.o
+build/window.o: window.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+	$(part) window.cpp -o build/window.o
 
-tmp/draw.o: draw.cpp draw.hpp
-	$(part) draw.cpp -o tmp/draw.o
+build/draw.o: draw.cpp draw.hpp
+	$(part) draw.cpp -o build/draw.o
 
-tmp/input.o: input.cpp input.hpp data_types/entity.hpp world.hpp
-	$(part) input.cpp -o tmp/input.o
+build/input.o: input.cpp input.hpp data_types/entity.hpp world.hpp
+	$(part) input.cpp -o build/input.o
 
-tmp/entity.type.o: data_types/entity.cpp data_types/entity.hpp
-	$(part) data_types/entity.cpp -o tmp/entity.type.o
+build/entity.type.o: data_types/entity.cpp data_types/entity.hpp
+	$(part) data_types/entity.cpp -o build/entity.type.o
 
-tmp/heightMap.type.o: data_types/heightMap.cpp data_types/heightMap.hpp
-	$(part) data_types/heightMap.cpp -o tmp/heightMap.type.o
+build/heightMap.type.o: data_types/heightMap.cpp data_types/heightMap.hpp
+	$(part) data_types/heightMap.cpp -o build/heightMap.type.o
 
 clean:
-	rm tmp/*
+	rm build/*
