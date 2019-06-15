@@ -75,21 +75,21 @@ void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Que
 
   while ( *running )
   {
-	std::cerr << "Client waiting for locks" << std::endl;
-    queue->lock();
-    generating->lock();
-	std::cerr << "Client acquired locks" << std::endl;
+    //std::cerr << "Client waiting for locks" << std::endl;
+    //queue->lock();
+    //generating->lock();
+    //std::cerr << "Client acquired locks" << std::endl;
 
-	std::cerr << "Getting position" << std::endl;
+    std::cerr << "Getting position" << std::endl;
     pos = queue->first();
 
-	std::cerr << "Adding generating chunk" << std::endl;
+    std::cerr << "Adding generating chunk" << std::endl;
     generating->push( pos );
 
-    queue->unlock();
-    generating->unlock();
+    //queue->unlock();
+    //generating->unlock();
 
-	std::cerr << "Generating chunk " << pos.x << ", " << pos.y << std::endl;
+    std::cerr << "Generating chunk " << pos.x << ", " << pos.y << std::endl;
 
     if ( ! *running )
       break;
@@ -208,7 +208,7 @@ void generationServer( bool* running, World* world, Entity* player, Queue<vector
 
     // TODO:currently generates entire sequence but only needs next level.
     s = generateSeq( world, player, generating );
-	std::cerr << "Scheduling " << s.size() << " chunks to be generated, I think?" << std::endl;
+    //std::cerr << "Scheduling " << s.size() << " chunks to be generated, I think?" << std::endl;
 
     std::deque< Queue< vector2ll > > a = generateSeq( world, player, generating );
     while ( ! a[0].empty() )

@@ -13,10 +13,10 @@ template<typename TYPE>
 class Queue
 {
 public:
-  void push(TYPE n); // adds a new last element.
+  void push(TYPE n); // adds a new last element, notifying all waiting threads.
   void pop(); // removes the first element.
   TYPE front(); // returns a reference to the first element.
-  TYPE first(); // returns and removes the first element.
+  TYPE first(); // returns and removes the first element, notifying all threads.
 
   void clear(); // clears the queue.
   bool empty();
