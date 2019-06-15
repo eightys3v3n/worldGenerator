@@ -5,10 +5,10 @@ full=$(gcc) $(args)
 
 all: main
 
-main: build/main build/world.o build/generator.o build/draw.o build/input.o build/entity.type.o build/heightMap.type.o
+main: build/main.o build/world.o build/generator.o build/draw.o build/input.o build/entity.type.o build/heightMap.type.o
 	$(full) -lsfml-graphics -lsfml-window -lsfml-system -lpthread -g build/* -o main
 
-build/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
+build/main.o: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
 	$(part) main.cpp -o build/main
 
 build/world.o: world.cpp world.hpp data_types/chunk.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp

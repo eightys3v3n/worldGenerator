@@ -80,10 +80,10 @@ void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Que
     //generating->lock();
     //std::cerr << "Client acquired locks" << std::endl;
 
-    std::cerr << "Getting position" << std::endl;
+    //std::cerr << "Getting position" << std::endl;
     pos = queue->first();
 
-    std::cerr << "Adding generating chunk" << std::endl;
+    //std::cerr << "Adding generating chunk" << std::endl;
     generating->push( pos );
 
     //queue->unlock();

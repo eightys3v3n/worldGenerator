@@ -30,7 +30,7 @@
 
 // the amount of threads to use for chunk generation.
 #ifndef THREADS
-#define THREADS 1
+#define THREADS 8
 #endif // THREADS
 
 // probabilities of being a given type of ground; between 0-99; must not overlap
