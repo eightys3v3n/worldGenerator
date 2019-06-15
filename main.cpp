@@ -67,12 +67,14 @@ int main( int argc, char** argv )
   player.x = 0;
   player.y = 0;
 
+  // No idea what this debug shape is for
   RectangleShape debug;
   debug.setSize( Vector2f{ CHUNK_SIZE, CHUNK_SIZE } );
   debug.setPosition(0,0);
-    debug.setOrigin( CHUNK_SIZE / 2, CHUNK_SIZE / 2 );
+  debug.setOrigin( CHUNK_SIZE / 2, CHUNK_SIZE / 2 );
   debug.setFillColor( Color( 255, 0, 0, 125 ) );
 
+  // Create all the chunk generation threads.
   for ( unsigned int t = 0; t < THREADS; t++ )
     chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks, &generatingChunks ) );
 

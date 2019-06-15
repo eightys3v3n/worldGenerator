@@ -28,7 +28,7 @@ void input( sf::RenderWindow* window, bool* running, World* world, Entity* playe
         //if ( player->x % 2 == 0 )
         //  player->shape.setPosition( player->shape.getPosition().x, window->getSize().y / 2 );
         //else
-        //  player->shape.setPosition( player->shape.getPosition().x, window->getSize().y / 2 + CHUNK_dIAMETER / 2);
+        //  player->shape.setPosition( player->shape.getPosition().x, window->getSize().y / 2 + CHUNK_SIZE / 2);
 
         break;
 

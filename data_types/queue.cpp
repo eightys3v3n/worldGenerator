@@ -24,11 +24,13 @@ public:
   unsigned int size(); // returns the size of the queue.
   void untilSize( unsigned int s ); // blocks until size is s.
 
+  bool contains(TYPE e); // true if the Queue already contains e, false otherwise.
+
   void lock();
   bool unlock();
 
 private:
-  std::queue<TYPE> q; // the queue.
+  std::vector<TYPE> q; // the queue.
   std::condition_variable cv; // notified on queue modification.
   std::mutex m; // modification to queue contents.
   std::thread::id id; // keeps track of who locks the persistant lock.
@@ -39,7 +41,7 @@ void Queue<TYPE>::push(TYPE nu)
 {
   std::unique_lock<std::mutex> lk(m);
 
-  q.push(nu);
+  q.push_back(nu);
 
   lk.unlock();
   cv.notify_all();
@@ -67,7 +69,7 @@ void Queue<TYPE>::pop()
   std::unique_lock<std::mutex> lk(m);
 
   if ( ! q.empty() )
-  q.pop();
+  q.erase(q.begin());
 
   lk.unlock();
   cv.notify_all();
@@ -84,7 +86,7 @@ TYPE Queue<TYPE>::first()
 
   buf = q.front();
 
-  q.pop();
+  q.erase(q.begin());
 
   lk.unlock();
 
@@ -105,7 +107,7 @@ void Queue<TYPE>::clear()
   std::unique_lock<std::mutex> lk(m);
 
   while ( ! q.empty() )
-    q.pop();
+    q.erase(q.begin());
 
   lk.unlock();
 
@@ -128,6 +130,16 @@ void Queue<TYPE>::untilSize( unsigned int s )
     cv.wait(lk);
 
   lk.unlock();
+}
+
+template<typename TYPE>
+bool Queue<TYPE>::contains(TYPE e)
+{
+  for(auto v: q) {
+    if (e == v)
+      return true;
+  }
+  return false;
 }
 
 // lock the queue to this thread.
