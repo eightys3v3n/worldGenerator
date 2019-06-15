@@ -1,0 +1,1 @@
+Chunk generation threads aren't stopping when the project is closed.
