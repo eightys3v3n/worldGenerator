@@ -6,7 +6,7 @@ full=$(gcc) $(args)
 all: main
 
 main: tmp/main tmp/world.o tmp/generator.o tmp/draw.o tmp/input.o tmp/entity.type.o tmp/heightMap.type.o
-	$(full) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lpthread -g tmp/* -o main
+	$(full) -lsfml-graphics -lsfml-window -lsfml-system -lpthread -g tmp/* -o main
 
 tmp/main: main.cpp defaults.hpp data_types/queue.cpp data_types/queue.hpp
 	$(part) main.cpp -o tmp/main
