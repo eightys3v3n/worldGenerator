@@ -65,11 +65,13 @@ void generateChunk( World* world, vector2ll& pos )
     type = LAND;
   else if ( r >= water.x && r <= water.y )
     type = WATER;
+  else
+    type = LAND;
 
   world->set( pos.x, pos.y, type );
 }
 
-void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ, Queue<vector2ll>* generating )
+void generationClient( unsigned int id, bool* running, World* world, Queue<vector2ll>* queue, Queue<vector2ll>* finQ, Queue<vector2ll>* generating )
 {
   vector2ll pos;
 
@@ -83,16 +85,14 @@ void generationClient( bool* running, World* world, Queue<vector2ll>* queue, Que
     //std::cerr << "Getting position" << std::endl;
     pos = queue->first();
 
+    std::cerr << id << ": Took position " << pos.x << ", " << pos.y << std::endl;
     //std::cerr << "Adding generating chunk" << std::endl;
     generating->push( pos );
 
     //queue->unlock();
     //generating->unlock();
 
-    std::cerr << "Generating chunk " << pos.x << ", " << pos.y << std::endl;
-
-    if ( ! *running )
-      break;
+    //std::cerr << "Generating chunk " << pos.x << ", " << pos.y << std::endl;
 
     generateChunk( world, pos );
     generateHeight( world, pos );
@@ -221,13 +221,17 @@ void generationServer( bool* running, World* world, Entity* player, Queue<vector
     finChunks->untilSize( queued );
     finChunks->clear();
 
+    chunks->clear();
+
     queued = s[0].size();
 
-    while ( ! s[0].empty() )
+    while ( ! s[0].empty() ) {
+      std::cerr << "Pushed chunk " << s[0].front().x << ", " << s[0].front().y << std::endl;
       chunks->push( s[0].first() );
+    }
   }
 
   // to resume chunk generation threads; they will not generate a chunk if running is false.
-  for ( unsigned int t = 0; t < THREADS; t++ )
+  for ( unsigned int t = 0; t < THREADS*2; t++ )
     chunks->push( vector2ll{0,0} );
 }

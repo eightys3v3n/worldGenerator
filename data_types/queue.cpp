@@ -66,6 +66,9 @@ TYPE Queue<TYPE>::front()
 template<typename TYPE>
 void Queue<TYPE>::pop()
 {
+  /*
+    Erase the first element
+   */
   std::unique_lock<std::mutex> lk(m);
 
   if ( ! q.empty() )
@@ -78,6 +81,9 @@ void Queue<TYPE>::pop()
 template<typename TYPE>
 TYPE Queue<TYPE>::first()
 {
+  /*
+    Get the first element or wait for an element.
+   */
   TYPE buf;
   std::unique_lock<std::mutex> lk(m);
 
@@ -89,7 +95,6 @@ TYPE Queue<TYPE>::first()
   q.erase(q.begin());
 
   lk.unlock();
-
   cv.notify_all();
 
   return buf;
@@ -110,7 +115,6 @@ void Queue<TYPE>::clear()
     q.erase(q.begin());
 
   lk.unlock();
-
   cv.notify_all();
 }
 

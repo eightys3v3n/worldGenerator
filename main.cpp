@@ -76,7 +76,7 @@ int main( int argc, char** argv )
 
   // Create all the chunk generation threads.
   for ( unsigned int t = 0; t < THREADS; t++ )
-    chunkGenT.push_back( thread( generationClient, &running, &world, &chunksToGen, &generatedChunks, &generatingChunks ) );
+    chunkGenT.push_back( thread( generationClient, t, &running, &world, &chunksToGen, &generatedChunks, &generatingChunks ) );
 
   // starts a loop as long as running == true.
   while ( running )

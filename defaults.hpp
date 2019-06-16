@@ -56,5 +56,5 @@
 
 // a delay for generating a chunk; it makes it easier to see how they are being generated.
 #ifndef GENERATION_DELAY
-#define GENERATION_DELAY 40 // ms
+#define GENERATION_DELAY 100 // ms
 #endif // GENERATION_DELAY
